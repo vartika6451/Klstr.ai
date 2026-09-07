@@ -1,10 +1,83 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Shield, Lock, Server, Sparkles, ArrowRight } from 'lucide-react';
 
+export const metadata: Metadata = {
+  title: 'Enterprise GenAI | Secured Conversational AI Platform',
+  description:
+    'Enterprise-grade conversational AI with uncompromised security and privacy. Deployed on private cloud or on-premise with fine-tuning on proprietary enterprise knowledge.',
+  keywords: [
+    'Enterprise GenAI',
+    'Private Conversational AI',
+    'Enterprise LLM',
+    'Private Cloud AI',
+    'On-Premise GenAI',
+    'Secure Enterprise AI',
+    'SSO AI Compliance',
+  ],
+  alternates: {
+    canonical: '/klstr-enterprise-gen-ai',
+  },
+  openGraph: {
+    title: 'Enterprise GenAI | Secured Conversational AI Platform - klstr.ai',
+    description:
+      'Enterprise-grade conversational AI with uncompromised security. Private cloud, on-premise deployment, and domain fine-tuning.',
+    url: 'https://www.klstr.ai/klstr-enterprise-gen-ai',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Enterprise GenAI | Secured Conversational AI Platform',
+    description:
+      'Enterprise-grade conversational AI with uncompromised security. Private cloud, on-premise deployment, and domain fine-tuning.',
+  },
+};
+
+const jsonLdEnterpriseGenAI = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "klstrEnterpriseGenAI",
+      "operatingSystem": "Cloud, Private Cloud, On-Premise",
+      "applicationCategory": "BusinessApplication",
+      "description":
+        "Enterprise-grade conversational AI solution purpose-built for secure private deployment within your organization.",
+      "provider": {
+        "@type": "Organization",
+        "name": "klstr.ai",
+        "url": "https://www.klstr.ai",
+      },
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://www.klstr.ai",
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Enterprise GenAI",
+          "item": "https://www.klstr.ai/klstr-enterprise-gen-ai",
+        },
+      ],
+    },
+  ],
+};
+
 export default function EnterpriseGenAIPage() {
   return (
     <div className="bg-white min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdEnterpriseGenAI) }}
+      />
+
       {/* Hero Section */}
       <section className="pt-12 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-12 gap-10 items-center">
@@ -38,7 +111,7 @@ export default function EnterpriseGenAIPage() {
             <div className="relative w-full max-w-[400px] aspect-square">
               <Image
                 src="/images/enterprise-genai.png"
-                alt="Enterprise GenAI"
+                alt="Enterprise GenAI Platform"
                 fill
                 sizes="(max-width: 1024px) 100vw, 400px"
                 className="object-contain"

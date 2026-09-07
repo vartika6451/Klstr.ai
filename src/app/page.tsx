@@ -1,11 +1,63 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
+
+export const metadata: Metadata = {
+  title: 'klstr.ai | Transform Your Business with AI-Driven Digital Solutions',
+  description:
+    'Enterprise AI, SLMs, Tiny LMs, Foundational Models, and Data Marketplaces supercharged by Artificial Intelligence. Discover vertical AI solutions tailored to your industry.',
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: 'klstr.ai | Transform Your Business with AI-Driven Digital Solutions',
+    description:
+      'Enterprise AI, SLMs, Tiny LMs, Foundational Models, and Data Marketplaces supercharged by Artificial Intelligence.',
+    url: 'https://www.klstr.ai',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'klstr.ai | Transform Your Business with AI-Driven Digital Solutions',
+    description:
+      'Enterprise AI, SLMs, Tiny LMs, Foundational Models, and Data Marketplaces supercharged by Artificial Intelligence.',
+  },
+};
+
+const jsonLdHome = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://www.klstr.ai/#webpage",
+      "url": "https://www.klstr.ai",
+      "name": "Transform Your Business with AI-Driven Digital Solutions | klstr.ai",
+      "isPartOf": {
+        "@id": "https://www.klstr.ai/#website",
+      },
+      "about": {
+        "@id": "https://www.klstr.ai/#organization",
+      },
+      "description":
+        "Enterprise AI, SLMs, Tiny LMs, Foundational Models, and Data Marketplaces supercharged by Artificial Intelligence.",
+    },
+  ],
+};
 
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdHome) }}
+      />
+
       {/* SECTION 1: HERO SECTION */}
-      <section className="bg-white pt-10 pb-16 md:pt-16 md:pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+      <section
+        id="hero"
+        aria-label="Hero Section"
+        className="bg-white pt-10 pb-16 md:pt-16 md:pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full"
+      >
         <div className="grid lg:grid-cols-12 gap-10 lg:gap-8 items-center">
           {/* Left Column */}
           <div className="lg:col-span-7">
@@ -21,6 +73,7 @@ export default function Home() {
             <div className="mb-12">
               <Link
                 href="/contact-us"
+                id="hero-book-demo-btn"
                 className="bg-black hover:bg-neutral-800 text-white px-8 py-3.5 rounded-md font-bold text-base transition-all duration-150 inline-block shadow-sm active:scale-95"
               >
                 Book a Demo
@@ -34,7 +87,7 @@ export default function Home() {
                 <div className="w-8 h-8 relative flex-shrink-0">
                   <Image
                     src="/images/icon_1.svg"
-                    alt=""
+                    alt="Experienced AI Team icon"
                     width={32}
                     height={32}
                     className="object-contain"
@@ -50,7 +103,7 @@ export default function Home() {
                 <div className="w-8 h-8 relative flex-shrink-0">
                   <Image
                     src="/images/icon_2.svg"
-                    alt=""
+                    alt="Flexibility and Scalability icon"
                     width={32}
                     height={32}
                     className="object-contain"
@@ -66,7 +119,7 @@ export default function Home() {
                 <div className="w-8 h-8 relative flex-shrink-0">
                   <Image
                     src="/images/icon_3.svg"
-                    alt=""
+                    alt="Personalized AI Solutions icon"
                     width={32}
                     height={32}
                     className="object-contain"
@@ -82,7 +135,7 @@ export default function Home() {
                 <div className="w-8 h-8 relative flex-shrink-0">
                   <Image
                     src="/images/icon_4.svg"
-                    alt=""
+                    alt="Speed and Security icon"
                     width={32}
                     height={32}
                     className="object-contain"
@@ -98,7 +151,7 @@ export default function Home() {
                 <div className="w-8 h-8 relative flex-shrink-0">
                   <Image
                     src="/images/icon_5.svg"
-                    alt=""
+                    alt="Affordable Packages icon"
                     width={32}
                     height={32}
                     className="object-contain"
@@ -114,7 +167,7 @@ export default function Home() {
                 <div className="w-8 h-8 relative flex-shrink-0">
                   <Image
                     src="/images/icon_6.svg"
-                    alt=""
+                    alt="Proven Results icon"
                     width={32}
                     height={32}
                     className="object-contain"
@@ -132,7 +185,7 @@ export default function Home() {
             <div className="relative w-full max-w-[500px] aspect-square">
               <Image
                 src="/images/hero-brain.png"
-                alt="AI Digital Solutions"
+                alt="AI Digital Solutions platform with neural network and analytics"
                 fill
                 sizes="(max-width: 1024px) 100vw, 500px"
                 className="object-contain"
@@ -150,12 +203,17 @@ export default function Home() {
           viewBox="0 0 1200 45"
           preserveAspectRatio="none"
           className="w-full h-10 sm:h-12 text-[#ffbf23] block fill-current"
+          aria-hidden="true"
         >
           <polygon points="0,0 1200,28 1200,45 0,45" />
         </svg>
       </div>
 
-      <section className="bg-black text-white pt-14 pb-24 relative">
+      <section
+        id="innovation"
+        aria-label="Innovation Partner Section"
+        className="bg-black text-white pt-14 pb-24 relative"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-12 gap-10 items-center">
             {/* Left Column: Team Illustration */}
@@ -163,7 +221,7 @@ export default function Home() {
               <div className="relative w-full max-w-[480px] aspect-[4/3]">
                 <Image
                   src="/images/innovation-team.png"
-                  alt="Innovation Team"
+                  alt="Enterprise AI Innovation Team collaborating on digital architecture"
                   fill
                   sizes="(max-width: 768px) 100vw, 480px"
                   className="object-contain"
@@ -184,6 +242,7 @@ export default function Home() {
               </p>
               <Link
                 href="/contact-us"
+                id="innovation-get-started-btn"
                 className="bg-[#ffbf23] hover:bg-[#f0b018] text-black px-7 py-3 rounded-md font-bold text-base transition-all duration-150 inline-block shadow active:scale-95"
               >
                 Get Started
@@ -193,7 +252,7 @@ export default function Home() {
         </div>
 
         {/* Iconic Centered Wavy Lines Graphic at Section Bottom */}
-        <div className="absolute left-1/2 -bottom-12 sm:-bottom-14 -translate-x-1/2 z-20 pointer-events-none">
+        <div className="absolute left-1/2 -bottom-12 sm:-bottom-14 -translate-x-1/2 z-20 pointer-events-none" aria-hidden="true">
           <div className="relative w-36 sm:w-44 h-24 sm:h-28">
             <Image
               src="/images/icon_7.svg"
@@ -206,7 +265,11 @@ export default function Home() {
       </section>
 
       {/* SECTION 3: WHAT WE OFFER (WHITE BACKGROUND) */}
-      <section className="bg-white pt-24 sm:pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+      <section
+        id="offerings"
+        aria-label="What We Offer Section"
+        className="bg-white pt-24 sm:pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full"
+      >
         <div className="mb-14">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-5 tracking-tight">
             What We Offer
@@ -223,7 +286,7 @@ export default function Home() {
             <div className="relative w-44 h-44 mb-6 flex-shrink-0">
               <Image
                 src="/images/agentic-os.png"
-                alt="Agentic OS"
+                alt="Agentic OS tiny and small language models orchestrator"
                 fill
                 sizes="176px"
                 className="object-contain"
@@ -239,6 +302,7 @@ export default function Home() {
             </p>
             <Link
               href="/klstr-agentic-os"
+              id="offering-agentic-os-btn"
               className="w-full max-w-[200px] bg-black hover:bg-neutral-800 text-white py-2.5 px-6 rounded-md font-bold text-sm transition-all duration-150 inline-block shadow-sm active:scale-95"
             >
               Get Started
@@ -250,7 +314,7 @@ export default function Home() {
             <div className="relative w-44 h-44 mb-6 flex-shrink-0">
               <Image
                 src="/images/enterprise-genai.png"
-                alt="Enterprise GenAI"
+                alt="Enterprise GenAI private secure conversational AI solution"
                 fill
                 sizes="176px"
                 className="object-contain"
@@ -264,6 +328,7 @@ export default function Home() {
             </p>
             <Link
               href="/klstr-enterprise-gen-ai"
+              id="offering-enterprise-genai-btn"
               className="w-full max-w-[200px] bg-black hover:bg-neutral-800 text-white py-2.5 px-6 rounded-md font-bold text-sm transition-all duration-150 inline-block shadow-sm active:scale-95"
             >
               Get Started
@@ -275,7 +340,7 @@ export default function Home() {
             <div className="relative w-44 h-44 mb-6 flex-shrink-0">
               <Image
                 src="/images/datahub.png"
-                alt="DataHub"
+                alt="DataHub verified AI data marketplace and exchange"
                 fill
                 sizes="176px"
                 className="object-contain"
@@ -291,6 +356,7 @@ export default function Home() {
             </p>
             <Link
               href="/klstr-ai-data-market"
+              id="offering-datahub-btn"
               className="w-full max-w-[200px] bg-black hover:bg-neutral-800 text-white py-2.5 px-6 rounded-md font-bold text-sm transition-all duration-150 inline-block shadow-sm active:scale-95"
             >
               Get Started
@@ -306,12 +372,17 @@ export default function Home() {
           viewBox="0 0 1200 50"
           preserveAspectRatio="none"
           className="w-full h-10 sm:h-14 text-[#ffbf23] block fill-current"
+          aria-hidden="true"
         >
           <polygon points="0,40 1200,0 1200,50 0,50" />
         </svg>
       </div>
 
-      <section className="bg-[#ffbf23] text-black pt-6 pb-24 px-4 sm:px-6 lg:px-8">
+      <section
+        id="testimonials"
+        aria-label="Client Testimonials Section"
+        className="bg-[#ffbf23] text-black pt-6 pb-24 px-4 sm:px-6 lg:px-8"
+      >
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-bold text-black mb-12 tracking-tight">
             What our clients say
@@ -370,7 +441,11 @@ export default function Home() {
       </section>
 
       {/* SECTION 5: GROW YOUR VISION (WHITE CTA) */}
-      <section className="bg-white py-20 sm:py-24 text-center px-4 sm:px-6 lg:px-8">
+      <section
+        id="cta"
+        aria-label="Call to Action Section"
+        className="bg-white py-20 sm:py-24 text-center px-4 sm:px-6 lg:px-8"
+      >
         <div className="max-w-4xl mx-auto">
           <h2 className="text-4xl sm:text-5xl font-bold text-black mb-4 tracking-tight">
             Grow Your Vision
@@ -380,6 +455,7 @@ export default function Home() {
           </p>
           <Link
             href="/contact-us"
+            id="bottom-book-demo-btn"
             className="bg-black hover:bg-neutral-800 text-white px-8 py-3.5 rounded-md font-bold text-base transition-all duration-150 inline-block shadow-sm active:scale-95"
           >
             Book a Demo

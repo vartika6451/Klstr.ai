@@ -1,10 +1,90 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Cpu, Database, Network, ShieldCheck, Zap, ArrowRight } from 'lucide-react';
 
+export const metadata: Metadata = {
+  title: 'AgenticOS | Enterprise Vertical AI Infrastructure',
+  description:
+    'Plug & play orchestration of static and dynamic knowledge for your industry with power of Tiny & Small Language Models (SLMs). Enterprise vertical AI infrastructure.',
+  keywords: [
+    'AgenticOS',
+    'Enterprise AI',
+    'SLMs',
+    'Small Language Models',
+    'Tiny Language Models',
+    'AI Orchestrator',
+    'Vertical AI Infrastructure',
+    'Vector DB',
+  ],
+  alternates: {
+    canonical: '/klstr-agentic-os',
+  },
+  openGraph: {
+    title: 'AgenticOS | Enterprise Vertical AI Infrastructure - klstr.ai',
+    description:
+      'Plug & play orchestration of static and dynamic knowledge for your industry with power of Tiny & Small Language Models.',
+    url: 'https://www.klstr.ai/klstr-agentic-os',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'AgenticOS | Enterprise Vertical AI Infrastructure',
+    description:
+      'Plug & play orchestration of static and dynamic knowledge for your industry with power of Tiny & Small Language Models.',
+  },
+};
+
+const jsonLdAgenticOS = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "klstrAgenticOS",
+      "operatingSystem": "Cloud, Private Cloud, On-Premise",
+      "applicationCategory": "BusinessApplication",
+      "description":
+        "Enterprise AI for Vertical & Domain-Specific Infrastructure. Plug & play orchestration of static and dynamic knowledge.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+      },
+      "provider": {
+        "@type": "Organization",
+        "name": "klstr.ai",
+        "url": "https://www.klstr.ai",
+      },
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://www.klstr.ai",
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "AgenticOS",
+          "item": "https://www.klstr.ai/klstr-agentic-os",
+        },
+      ],
+    },
+  ],
+};
+
 export default function AgenticOSPage() {
   return (
     <div className="bg-white min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdAgenticOS) }}
+      />
+
       {/* Hero Section */}
       <section className="pt-12 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-12 gap-10 items-center">
@@ -38,7 +118,7 @@ export default function AgenticOSPage() {
             <div className="relative w-full max-w-[400px] aspect-square">
               <Image
                 src="/images/agentic-os.png"
-                alt="Agentic OS"
+                alt="Agentic OS AI Orchestration"
                 fill
                 sizes="(max-width: 1024px) 100vw, 400px"
                 className="object-contain"
