@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Feedback {
+  id        String   @id @default(uuid())
+  messageId String
+  tenantId  String
+  rating    Int      // 1 = up, -1 = down
+  createdAt DateTime @default(now())
+}
+
+model StaticFact {
+  id        String   @id @default(uuid())
+  tenantId  String
+  question  String
+  answer    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId])
+}
+
+model QueryLog {
+  id        String   @id @default(uuid())
+  tenantId  String
+  route     String
+  costUsd   Float    @default(0)
+  latencyMs Int
+  tokens    Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([tenantId, createdAt])
+  @@index([tenantId, route])
+}
+
+model FallbackLog {
+  id        String   @id @default(uuid())
+  tenantId  String
+  fromRoute String
+  toRoute   String
+  reason    String
+  createdAt DateTime @default(now())
+
+  @@index([tenantId, createdAt])
+}
