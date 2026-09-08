@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import DataHubExplorer from '@/components/DataHubExplorer';
@@ -141,7 +142,7 @@ export default function DataMarketPage() {
       <section className="bg-white pt-10 pb-16 md:pt-16 md:pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
         <div className="grid lg:grid-cols-12 gap-10 lg:gap-8 items-center">
           <div className="lg:col-span-7">
-            <span className="inline-block text-xs font-bold uppercase tracking-wider bg-[#ffbf23] text-black px-3 py-1 rounded-full mb-4">
+            <span className="inline-block text-xs font-bold uppercase tracking-wider bg-[#ffbf23] text-black px-3.5 py-1 rounded-full mb-5">
               klstrAIDataHub
             </span>
             <h1 className="text-4xl sm:text-5xl lg:text-[54px] font-bold text-black tracking-tight leading-[1.15] mb-6">
