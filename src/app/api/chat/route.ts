@@ -92,6 +92,7 @@ async function callGeminiDirect(
   return new ReadableStream<string>({
     async start(controller) {
       const reader = res.body!.getReader();
+      let errored = false;
       try {
         while (true) {
           const { done, value } = await reader.read();
@@ -119,10 +120,13 @@ async function callGeminiDirect(
         }
       } catch (e) {
         console.error('Gemini stream read error:', e);
-        controller.error(e);
+        errored = true;
+        try { controller.error(e); } catch {}
       } finally {
-        controller.close();
-        reader.releaseLock();
+        if (!errored) {
+          try { controller.close(); } catch {}
+        }
+        try { reader.releaseLock(); } catch {}
       }
     }
   });

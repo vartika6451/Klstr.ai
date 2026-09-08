@@ -1,0 +1,73 @@
+{
+  "docName": "Global Equities Order Depth & Microstructure (DataHub)",
+  "category": "Financial Markets",
+  "data": [
+    {
+      "timestamp": "2026-09-08T15:00:00.124Z",
+      "ticker": "NVDA",
+      "exchange": "XNAS",
+      "bid_px_1": 132.45,
+      "bid_sz_1": 2400,
+      "ask_px_1": 132.47,
+      "ask_sz_1": 3100,
+      "spread_bps": 1.51,
+      "order_imbalance_ratio": -0.127
+    },
+    {
+      "timestamp": "2026-09-08T15:00:00.129Z",
+      "ticker": "AAPL",
+      "exchange": "XNAS",
+      "bid_px_1": 228.1,
+      "bid_sz_1": 1800,
+      "ask_px_1": 228.12,
+      "ask_sz_1": 1200,
+      "spread_bps": 0.88,
+      "order_imbalance_ratio": 0.2
+    },
+    {
+      "timestamp": "2026-09-08T15:00:00.134Z",
+      "ticker": "MSFT",
+      "exchange": "XNAS",
+      "bid_px_1": 442.8,
+      "bid_sz_1": 950,
+      "ask_px_1": 442.85,
+      "ask_sz_1": 1100,
+      "spread_bps": 1.13,
+      "order_imbalance_ratio": -0.073
+    },
+    {
+      "timestamp": "2026-09-08T15:00:00.141Z",
+      "ticker": "AMZN",
+      "exchange": "XNAS",
+      "bid_px_1": 186.2,
+      "bid_sz_1": 4200,
+      "ask_px_1": 186.22,
+      "ask_sz_1": 3800,
+      "spread_bps": 1.07,
+      "order_imbalance_ratio": 0.05
+    },
+    {
+      "timestamp": "2026-09-08T15:00:00.150Z",
+      "ticker": "GOOGL",
+      "exchange": "XNAS",
+      "bid_px_1": 178.5,
+      "bid_sz_1": 1500,
+      "ask_px_1": 178.53,
+      "ask_sz_1": 2200,
+      "spread_bps": 1.68,
+      "order_imbalance_ratio": -0.189
+    }
+  ],
+  "columns": [
+    "timestamp",
+    "ticker",
+    "exchange",
+    "bid_px_1",
+    "bid_sz_1",
+    "ask_px_1",
+    "ask_sz_1",
+    "spread_bps",
+    "order_imbalance_ratio"
+  ],
+  "ingestedAt": "2026-09-08T15:43:12.835Z"
+}

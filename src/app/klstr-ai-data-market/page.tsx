@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import DataHubExplorer from '@/components/DataHubExplorer';
 import {
   Database,
   Radio,
@@ -156,10 +157,23 @@ export default function DataMarketPage() {
               Unlock the power of data with the world&apos;s most comprehensive data marketplace
             </p>
 
-            <div>
+            <div className="flex flex-wrap items-center gap-3.5">
+              <a
+                href="#marketplace"
+                className="bg-[#ffbf23] hover:bg-[#f0b018] text-black px-7 py-3.5 rounded-md font-bold text-base transition-all duration-150 inline-flex items-center gap-2 shadow-sm active:scale-95"
+              >
+                <span>Explore Marketplace</span>
+                <span className="w-2 h-2 rounded-full bg-black animate-ping"></span>
+              </a>
+              <a
+                href="#query-sandbox"
+                className="bg-neutral-900 hover:bg-neutral-800 text-white border border-neutral-700 px-6 py-3.5 rounded-md font-bold text-base transition-all duration-150 inline-flex items-center gap-2 shadow-sm active:scale-95"
+              >
+                <span>SQL Sandbox</span>
+              </a>
               <Link
                 href="/contact-us"
-                className="bg-black hover:bg-neutral-800 text-white px-8 py-3.5 rounded-md font-bold text-base transition-all duration-150 inline-block shadow-sm active:scale-95"
+                className="bg-black hover:bg-neutral-800 text-white px-7 py-3.5 rounded-md font-bold text-base transition-all duration-150 inline-block shadow-sm active:scale-95"
               >
                 Book a Demo
               </Link>
@@ -182,19 +196,27 @@ export default function DataMarketPage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* SECTION 2: FEATURES (BLACK SECTION) */}
+      {/* SECTION DIVIDER: WHITE HERO INTO DARK DATAHUB */}
       {/* ========================================================================= */}
-      <div className="w-full overflow-hidden leading-none bg-white">
+      <div className="w-full overflow-hidden leading-none bg-white -mb-1">
         <svg
           viewBox="0 0 1200 45"
           preserveAspectRatio="none"
-          className="w-full h-10 sm:h-12 text-black block fill-current"
+          className="w-full h-10 sm:h-12 text-[#0a0a0a] block fill-current"
         >
           <polygon points="0,0 1200,28 1200,45 0,45" />
         </svg>
       </div>
 
-      <section className="bg-black text-white pt-10 pb-24 px-4 sm:px-6 lg:px-8">
+      {/* ========================================================================= */}
+      {/* INTERACTIVE DATAHUB MARKETPLACE EXPLORER */}
+      {/* ========================================================================= */}
+      <DataHubExplorer />
+
+      {/* ========================================================================= */}
+      {/* SECTION 2: FEATURES (BLACK SECTION) */}
+      {/* ========================================================================= */}
+      <section className="bg-black text-white pt-16 pb-24 px-4 sm:px-6 lg:px-8 border-t border-neutral-900">
         <div className="max-w-7xl mx-auto">
           <div className="max-w-3xl mb-14">
             <span className="text-xs font-bold uppercase tracking-wider text-[#ffbf23] block mb-2">
