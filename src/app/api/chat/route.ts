@@ -113,6 +113,8 @@ async function callGeminiDirect(
           continue;
         }
         throw new Error(`Gemini API error (${res.status}): ${errText}`);
+      }
+
       // Parse the SSE stream from Gemini into a text stream
       const decoder = new TextDecoder();
       let sseBuffer = '';
