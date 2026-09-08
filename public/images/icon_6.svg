@@ -1,5 +1,5 @@
-<svg preserveAspectRatio="xMidYMid meet" data-bbox="42.5 45 115 110" viewBox="42.5 45 115 110" height="200" width="200" xmlns="http://www.w3.org/2000/svg" data-type="color" role="presentation" aria-hidden="true" aria-label="">
-    <g>
-        <path d="M113.556 45v34.409H78.028v34.406H42.5V155h115V45h-43.944zM78.028 146.603H50.915v-24.392h27.113v24.392zm35.528 0H86.445V87.806h27.112v58.797zm35.529 0h-27.114V53.396h27.114v93.207z" fill="#2F54DD" data-color="1" fill="currentColor"></path>
+<svg preserveAspectRatio="xMidYMid meet" data-bbox="42.5 45 115 110" viewBox="42.5 45 115 110" height="200" width="200" xmlns="http://www.w3.org/2000/svg" data-type="color" role="presentation" aria-hidden="true">
+    <g fill="#2F54DD">
+        <path d="M113.556 45v34.409H78.028v34.406H42.5V155h115V45h-43.944zM78.028 146.603H50.915v-24.392h27.113v24.392zm35.528 0H86.445V87.806h27.112v58.797zm35.529 0h-27.114V53.396h27.114v93.207z"/>
     </g>
 </svg>

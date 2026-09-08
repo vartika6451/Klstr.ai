@@ -18,6 +18,10 @@ export default function Navbar() {
     { name: 'Contact Us', href: '/contact-us' },
   ];
 
+  if (pathname?.startsWith('/klstr-enterprise-gen-ai/chat')) {
+    return null;
+  }
+
   return (
     <nav className="w-full bg-[#ffbf23] border-b border-[#f0b018] sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

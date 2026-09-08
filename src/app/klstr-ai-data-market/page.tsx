@@ -1,15 +1,28 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
+import DataHubExplorer from '@/components/DataHubExplorer';
 import {
   Database,
-  ShieldCheck,
+  Radio,
+  Lock,
+  Tag,
+  LineChart,
+  CheckCheck,
+  Sparkles,
   TrendingUp,
-  BarChart3,
-  DollarSign,
-  ArrowRight,
-  Globe2,
-  CheckCircle2,
+  Users2,
+  PiggyBank,
+  Brain,
+  Search,
+  PieChart,
+  Target,
+  BarChart2,
+  Stethoscope,
+  Activity,
+  Compass,
+  Calendar,
+  Clock,
 } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -84,185 +97,160 @@ const jsonLdDataHub = {
 export default function DataMarketPage() {
   const features = [
     {
-      icon: <Database className="w-7 h-7 text-[#ffbf23]" />,
       title: 'Public Records',
-      description:
-        'Comprehensive multi-domain public data repositories pre-cleaned, normalized, and optimized for instant enterprise ingestion.',
+      description: 'Standardized and verified multi-jurisdiction public registries, legal filings, and macro telemetry.',
+      icon: Database,
     },
     {
-      icon: <TrendingUp className="w-7 h-7 text-[#ffbf23]" />,
       title: 'Sensor Data',
-      description:
-        'High-frequency real-time IoT feeds, telematics, geospatial mapping, and automated device telemetry streams.',
+      description: 'Continuous streaming feeds from industrial IoT nodes, fleet telematics, and environmental sensors.',
+      icon: Radio,
     },
     {
-      icon: <ShieldCheck className="w-7 h-7 text-[#ffbf23]" />,
       title: 'Secure Exchange',
-      description:
-        'Hardware-backed cleanrooms and cryptographically secured transactions preventing unauthorized leaks or reverse engineering.',
+      description: 'Cryptographic enclave access protecting intellectual property with automated zero-knowledge proofs.',
+      icon: Lock,
     },
     {
-      icon: <DollarSign className="w-7 h-7 text-[#ffbf23]" />,
       title: 'Flexible Pricing',
-      description:
-        'Pay-per-query, volume subscription tiers, and customized enterprise licensing models to fit every organizational budget.',
+      description: 'On-demand per-query micropayments, bulk tier packages, or recurring volume subscriptions.',
+      icon: Tag,
     },
     {
-      icon: <Globe2 className="w-7 h-7 text-[#ffbf23]" />,
       title: 'Market Data',
-      description:
-        'Real-time financial tickers, commodities, order book snapshots, currency pairs, and macroeconomic indicators.',
+      description: 'High-frequency order books, commodity pricing, supply-chain indices, and sentiment feeds.',
+      icon: LineChart,
     },
     {
-      icon: <BarChart3 className="w-7 h-7 text-[#ffbf23]" />,
       title: 'Quality Controls',
-      description:
-        'Automated schema validation, statistical outlier detection, drift tracking, and verifiable data lineage audits.',
+      description: 'Automated drift detection, completeness benchmarking, schema enforcement, and noise reduction.',
+      icon: CheckCheck,
     },
   ];
 
   const benefits = [
     {
       title: 'Innovation and Growth',
-      description:
-        'Supercharge machine learning models, SLMs, and predictive applications with verified, domain-calibrated external data.',
+      description: 'Accelerate your product roadmap by leveraging enriched foundational datasets without the multi-month acquisition cycle.',
+      icon: Sparkles,
     },
     {
       title: 'Accelerated Decision Making',
-      description:
-        'Reduce data procurement cycles from months of negotiation to instant API-driven data delivery and integration.',
+      description: 'Empower executive and trading teams with verified market signals and real-time operational feeds.',
+      icon: TrendingUp,
     },
     {
       title: 'Enhanced Collaboration',
-      description:
-        'Connect internal data scientists, engineers, and external data providers in unified, governed workspaces.',
+      description: 'Connect data scientists, business analysts, and external partners in secure data cleanrooms.',
+      icon: Users2,
     },
     {
       title: 'Cost Savings',
-      description:
-        'Eliminate duplicate licensing across departments and reduce internal data cleaning overhead by over 70%.',
+      description: 'Dramatically reduce data engineering, cleaning, and reconciliation overhead with pre-formatted datasets.',
+      icon: PiggyBank,
     },
   ];
 
   const useCases = [
     {
-      iconUrl: '/images/datahub/ai.png',
       title: 'AI Training',
-      description:
-        'High-fidelity domain-specific training data to train, fine-tune, and evaluate Large and Small Language Models.',
+      description: 'High-fidelity training data for SLMs, LLMs, and computer vision models.',
+      icon: Brain,
     },
     {
-      iconUrl: '/images/datahub/market-research.png',
       title: 'Market Research',
-      description:
-        'Granular consumer sentiment, competitive pricing trends, and demographic behavior forecasting.',
+      description: 'Consumer trends, pricing telemetry, and competitor movements.',
+      icon: Search,
     },
     {
-      iconUrl: '/images/datahub/bi.png',
       title: 'Business Intelligence',
-      description:
-        'Deep operational enrichment to unlock unseen revenue drivers and supply chain efficiencies.',
+      description: 'Enrich internal dashboards with macro industry metrics.',
+      icon: PieChart,
     },
     {
-      iconUrl: '/images/datahub/segmentation.png',
       title: 'Customer Segmentation',
-      description:
-        'Micro-behavioral clustering and cohort dynamics for hyper-personalized customer engagement.',
+      description: 'Behavioral profiling and demographic clustering.',
+      icon: Target,
     },
     {
-      iconUrl: '/images/datahub/descriptive.png',
       title: 'Descriptive Analytics',
-      description:
-        'Real-time operational dashboards summarizing historical trends and industry benchmark metrics.',
+      description: 'Comprehensive historical event logs and operational records.',
+      icon: BarChart2,
     },
     {
-      iconUrl: '/images/datahub/diagnostic.png',
       title: 'Diagnostic Analytics',
-      description:
-        'Automated root-cause detection engines pinpointing operational anomalies and revenue margin shifts.',
+      description: 'Root cause exploration and anomaly correlation datasets.',
+      icon: Stethoscope,
     },
     {
-      iconUrl: '/images/datahub/predictive.png',
       title: 'Predictive Analytics',
-      description:
-        'Machine learning models forecasting customer churn, demand surges, credit risks, and asset wear.',
+      description: 'Feature-engineered historical data for time-series forecasting.',
+      icon: Activity,
     },
     {
-      iconUrl: '/images/datahub/prescriptive.png',
       title: 'Prescriptive Analytics',
-      description:
-        'Automated decision recommendation engines delivering optimal next-best-action steps for teams.',
+      description: 'Simulation scenario matrices and automated decision trees.',
+      icon: Compass,
     },
   ];
 
   const frequencies = [
-    {
-      iconUrl: '/images/datahub/daily.png',
-      title: 'Daily',
-      description: 'Updated every 24 hours for daily market close, inventory balances, and reporting.',
-    },
-    {
-      iconUrl: '/images/datahub/monthly.png',
-      title: 'Monthly',
-      description: 'Aggregated monthly cohorts, billing summaries, and regulatory compliance reports.',
-    },
-    {
-      iconUrl: '/images/datahub/quarterly.png',
-      title: 'Quarterly',
-      description: 'Macroeconomic reviews, SEC filings, earnings benchmarks, and industry outlooks.',
-    },
-    {
-      iconUrl: '/images/datahub/semi-annual.png',
-      title: 'Semi Annually',
-      description: 'Bi-annual economic assessments, policy audits, and demographic census updates.',
-    },
-    {
-      iconUrl: '/images/datahub/annually.png',
-      title: 'Annually',
-      description: 'Comprehensive annual benchmark indexes, fiscal reviews, and longitudinal studies.',
-    },
-    {
-      iconUrl: '/images/datahub/on-demand.png',
-      title: 'On Demand',
-      description: 'Instant real-time streaming, automated webhook pushes, and ad-hoc query execution.',
-    },
+    'Daily',
+    'Monthly',
+    'Semi Annually',
+    'Annually',
+    'Quarterly',
+    'On Demand',
   ];
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-white min-h-screen flex flex-col">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdDataHub) }}
       />
 
+      {/* ========================================================================= */}
       {/* SECTION 1: HERO */}
-      <section className="pt-10 pb-16 md:pt-16 md:pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
-        <div className="grid lg:grid-cols-12 gap-10 items-center">
+      {/* ========================================================================= */}
+      <section className="bg-white pt-10 pb-16 md:pt-16 md:pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+        <div className="grid lg:grid-cols-12 gap-10 lg:gap-8 items-center">
           <div className="lg:col-span-7">
-            <span className="inline-block text-xs font-bold uppercase tracking-wider bg-[#ffbf23] text-black px-3.5 py-1 rounded-full mb-5">
+            <span className="inline-block text-xs font-bold uppercase tracking-wider bg-[#ffbf23] text-black px-3 py-1 rounded-full mb-4">
               klstrAIDataHub
             </span>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-black tracking-tight leading-[1.15] mb-6">
-              Unlock the power of data with the world&apos;s most comprehensive data marketplace
+            <h1 className="text-4xl sm:text-5xl lg:text-[54px] font-bold text-black tracking-tight leading-[1.15] mb-6">
+              klstrAIDataHub
             </h1>
-            <p className="text-gray-800 text-lg sm:text-xl font-normal leading-relaxed mb-4 max-w-2xl">
-              <strong>klstrAIDataHub</strong> is a cutting-edge data marketplace that connects data buyers and sellers from various industries, providing a secure, efficient, and scalable platform for data exchange.
+            <p className="text-gray-800 text-base sm:text-lg lg:text-xl font-normal mb-4 max-w-2xl leading-relaxed">
+              klstrAIDataHub is a cutting-edge data marketplace that connects data buyers and sellers from various industries, providing a secure, efficient, and scalable platform for data exchange.
             </p>
-            <p className="text-gray-600 text-base sm:text-lg leading-relaxed mb-8 max-w-2xl font-normal">
+            <p className="text-gray-600 text-sm sm:text-base mb-6 max-w-2xl leading-relaxed font-normal">
               Our mission is to democratize access to high-quality data, enabling businesses to make informed decisions, drive innovation, and gain a competitive edge.
             </p>
-            <div className="flex flex-wrap gap-4">
+            <p className="text-black font-semibold text-base sm:text-lg mb-8">
+              Unlock the power of data with the world&apos;s most comprehensive data marketplace
+            </p>
+
+            <div className="flex flex-wrap items-center gap-3.5">
+              <a
+                href="#marketplace"
+                className="bg-[#ffbf23] hover:bg-[#f0b018] text-black px-7 py-3.5 rounded-md font-bold text-base transition-all duration-150 inline-flex items-center gap-2 shadow-sm active:scale-95"
+              >
+                <span>Explore Marketplace</span>
+                <span className="w-2 h-2 rounded-full bg-black animate-ping"></span>
+              </a>
+              <a
+                href="#query-sandbox"
+                className="bg-neutral-900 hover:bg-neutral-800 text-white border border-neutral-700 px-6 py-3.5 rounded-md font-bold text-base transition-all duration-150 inline-flex items-center gap-2 shadow-sm active:scale-95"
+              >
+                <span>SQL Sandbox</span>
+              </a>
               <Link
                 href="/contact-us"
-                className="bg-black hover:bg-neutral-800 text-white px-8 py-3.5 rounded-md font-bold text-base transition duration-150 inline-block shadow-sm active:scale-95"
+                className="bg-black hover:bg-neutral-800 text-white px-7 py-3.5 rounded-md font-bold text-base transition-all duration-150 inline-block shadow-sm active:scale-95"
               >
                 Book a Demo
-              </Link>
-              <Link
-                href="#use-cases"
-                className="bg-gray-100 hover:bg-gray-200 text-black px-6 py-3.5 rounded-md font-bold text-base transition duration-150 inline-flex items-center gap-2"
-              >
-                Explore Use Cases <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
           </div>
@@ -271,7 +259,7 @@ export default function DataMarketPage() {
             <div className="relative w-full max-w-[440px] aspect-square">
               <Image
                 src="/images/datahub.png"
-                alt="klstrAIDataHub platform and data analytics"
+                alt="klstrAIDataHub"
                 fill
                 sizes="(max-width: 1024px) 100vw, 440px"
                 className="object-contain"
@@ -282,191 +270,173 @@ export default function DataMarketPage() {
         </div>
       </section>
 
-      {/* SECTION 2: FEATURES (BLACK WITH YELLOW ACCENTS) */}
-      <div className="w-full overflow-hidden leading-none bg-white">
+      {/* ========================================================================= */}
+      {/* SECTION DIVIDER: WHITE HERO INTO DARK DATAHUB */}
+      {/* ========================================================================= */}
+      <div className="w-full overflow-hidden leading-none -mb-1">
         <svg
           viewBox="0 0 1200 45"
           preserveAspectRatio="none"
-          className="w-full h-10 sm:h-12 text-black block fill-current"
-          aria-hidden="true"
+          className="w-full h-10 sm:h-12 text-[#0a0a0a] block fill-current"
         >
-          <polygon points="0,45 1200,10 1200,45" />
+          <polygon points="0,0 1200,28 1200,45 0,45" />
         </svg>
       </div>
 
-      <section id="features" className="bg-black text-white pt-12 pb-24 px-4 sm:px-6 lg:px-8">
+      {/* ========================================================================= */}
+      {/* INTERACTIVE DATAHUB MARKETPLACE EXPLORER */}
+      {/* ========================================================================= */}
+      <DataHubExplorer />
+
+      {/* ========================================================================= */}
+      {/* SECTION 2: FEATURES (BLACK SECTION) */}
+      {/* ========================================================================= */}
+      <section className="bg-black text-white pt-16 pb-24 px-4 sm:px-6 lg:px-8 border-t border-neutral-900">
         <div className="max-w-7xl mx-auto">
           <div className="max-w-3xl mb-14">
             <span className="text-xs font-bold uppercase tracking-wider text-[#ffbf23] block mb-2">
-              Capabilities
+              Marketplace Capabilities
             </span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 tracking-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-bold text-white mb-4 tracking-tight">
               Features
             </h2>
-            <p className="text-gray-300 text-base sm:text-lg leading-relaxed">
-              Enterprise-grade data infrastructure engineered for security, high-throughput delivery, and verified accuracy.
-            </p>
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-            {features.map((f, idx) => (
-              <div
-                key={idx}
-                className="bg-[#111] p-7 rounded-2xl border border-gray-800 hover:border-gray-700 hover:bg-[#161616] transition-all duration-200 flex flex-col"
-              >
-                <div className="w-12 h-12 rounded-xl bg-black border border-gray-800 flex items-center justify-center mb-5 flex-shrink-0">
-                  {f.icon}
-                </div>
-                <h3 className="text-xl font-bold text-white mb-3 tracking-tight">
-                  {f.title}
-                </h3>
-                <p className="text-gray-400 text-sm leading-relaxed flex-grow">
-                  {f.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* SECTION 3: BENEFITS (SIGNATURE YELLOW BACKGROUND) */}
-      <div className="w-full overflow-hidden leading-none -mb-1 bg-black">
-        <svg
-          viewBox="0 0 1200 50"
-          preserveAspectRatio="none"
-          className="w-full h-10 sm:h-14 text-[#ffbf23] block fill-current"
-          aria-hidden="true"
-        >
-          <polygon points="0,50 1200,0 1200,50" />
-        </svg>
-      </div>
-
-      <section id="benefits" className="bg-[#ffbf23] text-black pt-8 pb-24 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="max-w-3xl mb-14">
-            <span className="text-xs font-bold uppercase tracking-wider text-black/75 block mb-2">
-              Value Proposition
-            </span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-4 tracking-tight">
-              Benefits
-            </h2>
-            <p className="text-black/85 text-base sm:text-lg leading-relaxed font-normal">
-              How klstrAIDataHub transforms external data discovery, procurement, and governance for modern organizations.
-            </p>
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {benefits.map((b, idx) => (
-              <div
-                key={idx}
-                className="bg-white p-7 rounded-2xl shadow-sm border border-black/10 flex flex-col justify-between hover:shadow-md transition-shadow duration-200"
-              >
-                <div>
-                  <div className="w-9 h-9 rounded-full bg-[#ffbf23]/30 text-black flex items-center justify-center mb-4 font-bold text-sm">
-                    0{idx + 1}
-                  </div>
-                  <h3 className="font-bold text-lg text-black mb-3 tracking-tight">
-                    {b.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">
-                    {b.description}
-                  </p>
-                </div>
-                <div className="pt-6 flex items-center gap-2 text-xs font-semibold text-black">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  Verified Impact
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* SECTION 4: USE CASES (CLEAN WHITE WITH AUTHENTIC ICONS) */}
-      <section id="use-cases" className="bg-white py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
-        <div className="max-w-3xl mb-16">
-          <span className="text-xs font-bold uppercase tracking-wider bg-[#ffbf23] text-black px-3.5 py-1 rounded-full mb-3 inline-block">
-            Applications
-          </span>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-4 tracking-tight">
-            Use Cases
-          </h2>
-          <p className="text-gray-700 text-base sm:text-lg leading-relaxed font-normal">
-            Powering advanced artificial intelligence, machine learning, and operational decision systems across enterprises.
-          </p>
-        </div>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {useCases.map((uc, idx) => (
-            <div
-              key={idx}
-              className="p-6 rounded-2xl bg-white border border-gray-200 hover:border-black/30 hover:shadow-lg transition-all duration-200 flex flex-col group"
-            >
-              <div className="relative w-12 h-12 mb-5 flex-shrink-0">
-                <Image
-                  src={uc.iconUrl}
-                  alt={uc.title}
-                  width={48}
-                  height={48}
-                  className="object-contain group-hover:scale-105 transition-transform"
-                />
-              </div>
-              <h3 className="font-bold text-lg text-black mb-2 tracking-tight">
-                {uc.title}
-              </h3>
-              <p className="text-gray-600 text-sm leading-relaxed flex-grow">
-                {uc.description}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* SECTION 5: DATA FREQUENCY (BLACK BACKGROUND WITH FREQUENCY ICONS) */}
-      <section id="frequency" className="bg-black text-white py-24 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="max-w-3xl mb-16">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#ffbf23] block mb-2">
-              Ingestion Cadence
-            </span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#ffbf23] mb-4 tracking-tight">
-              Data Frequency
-            </h2>
-            <p className="text-gray-300 text-base sm:text-lg leading-relaxed">
-              Flexible delivery schedules designed to match the exact ingestion tempo of your production pipelines.
+            <p className="text-gray-300 text-lg leading-relaxed font-normal">
+              State-of-the-art cataloging, validation, and exchange mechanisms built for enterprise grade transactions.
             </p>
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {frequencies.map((freq, idx) => (
+            {features.map((feat) => {
+              const Icon = feat.icon;
+              return (
+                <div
+                  key={feat.title}
+                  className="bg-[#111] p-6 rounded-2xl border border-neutral-800 hover:border-neutral-700 transition-colors"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-[#ffbf23] text-black flex items-center justify-center mb-4">
+                    <Icon className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-lg font-bold text-white mb-2">{feat.title}</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed">{feat.description}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* SECTION 3: BENEFITS (WHITE SECTION) */}
+      {/* ========================================================================= */}
+      <section className="bg-white py-20 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+        <div className="max-w-3xl mb-14">
+          <span className="text-xs font-bold uppercase tracking-wider bg-[#ffbf23] text-black px-3 py-1 rounded-full mb-3 inline-block">
+            Value Proposition
+          </span>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-4 tracking-tight">
+            Benefits
+          </h2>
+          <p className="text-gray-700 text-base sm:text-lg">
+            Direct business impact through democratized high-quality data access.
+          </p>
+        </div>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {benefits.map((b) => {
+            const Icon = b.icon;
+            return (
               <div
-                key={idx}
-                className="bg-[#111] p-6 rounded-2xl border border-gray-800 hover:border-[#ffbf23]/50 transition-all duration-200 flex items-start gap-4"
+                key={b.title}
+                className="p-6 rounded-2xl bg-neutral-50 border border-neutral-200 hover:shadow-md transition-shadow"
               >
-                <div className="relative w-12 h-12 rounded-xl bg-black border border-gray-800 flex items-center justify-center flex-shrink-0 p-2">
-                  <Image
-                    src={freq.iconUrl}
-                    alt={freq.title}
-                    width={36}
-                    height={36}
-                    className="object-contain"
-                  />
+                <div className="w-10 h-10 rounded-lg bg-black text-[#ffbf23] flex items-center justify-center mb-4">
+                  <Icon className="w-5 h-5" />
                 </div>
-                <div>
-                  <h3 className="font-bold text-lg text-white mb-1.5 tracking-tight">
-                    {freq.title}
-                  </h3>
-                  <p className="text-gray-400 text-sm leading-relaxed">
-                    {freq.description}
-                  </p>
+                <h3 className="text-lg font-bold text-black mb-2">{b.title}</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">{b.description}</p>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* SECTION 4: USE CASES (YELLOW SECTION) */}
+      {/* ========================================================================= */}
+      <div className="w-full overflow-hidden leading-none -mb-1">
+        <svg
+          viewBox="0 0 1200 50"
+          preserveAspectRatio="none"
+          className="w-full h-10 sm:h-14 text-[#ffbf23] block fill-current"
+        >
+          <polygon points="0,40 1200,0 1200,50 0,50" />
+        </svg>
+      </div>
+
+      <section className="bg-[#ffbf23] text-black pt-6 pb-24 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="max-w-3xl mb-14">
+            <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-bold text-black mb-4 tracking-tight">
+              Use Cases
+            </h2>
+            <p className="text-black/85 text-lg">
+              Empowering diverse analytics, artificial intelligence, and strategic operations.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {useCases.map((uc) => {
+              const Icon = uc.icon;
+              return (
+                <div
+                  key={uc.title}
+                  className="bg-white p-6 rounded-2xl shadow-sm border border-black/10 hover:shadow-md transition-shadow"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-[#ffbf23]/20 text-black flex items-center justify-center mb-3">
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <h3 className="font-bold text-lg text-black mb-2">{uc.title}</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">{uc.description}</p>
                 </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* SECTION 5: DATA FREQUENCY (DARK SECTION) */}
+      {/* ========================================================================= */}
+      <section className="bg-black text-white py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="max-w-3xl mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+              Data Frequency
+            </h2>
+            <p className="text-gray-400 text-lg">
+              Synchronize at the exact cadence required by your operational workflows and machine learning pipelines.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            {frequencies.map((freq) => (
+              <div
+                key={freq}
+                className="bg-[#111] border border-neutral-800 rounded-xl p-5 text-center hover:border-[#ffbf23] transition-colors"
+              >
+                <div className="w-8 h-8 rounded-full bg-[#ffbf23]/20 text-[#ffbf23] flex items-center justify-center mx-auto mb-3">
+                  <Clock className="w-4 h-4" />
+                </div>
+                <span className="text-white font-bold text-base block">{freq}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* SECTION 6: GROW YOUR VISION (WHITE CTA) */}
+      {/* ========================================================================= */}
+      {/* SECTION 6: GROW YOUR VISION */}
+      {/* ========================================================================= */}
       <section className="bg-white py-20 sm:py-24 text-center px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-4xl sm:text-5xl font-bold text-black mb-4 tracking-tight">
