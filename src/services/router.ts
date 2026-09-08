@@ -118,9 +118,9 @@ async function runSlm(query: string) {
   }
 
   if (env.GEMINI_API_KEY) {
-    let model = env.CHAT_MODEL || 'gemini-3.6-flash';
+    let model = env.CHAT_MODEL || 'gemini-3.7-flash';
     if (model.includes('1.5') || model.includes('2.5') || model === 'gemini-flash-latest') {
-      model = 'gemini-3.6-flash';
+      model = 'gemini-3.7-flash';
     }
     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
       method: 'POST',
