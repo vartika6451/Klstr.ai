@@ -118,7 +118,10 @@ async function runSlm(query: string) {
   }
 
   if (env.GEMINI_API_KEY) {
-    const model = env.CHAT_MODEL === 'gemini-1.5-flash' ? 'gemini-3.6-flash' : env.CHAT_MODEL;
+    let model = env.CHAT_MODEL || 'gemini-3.6-flash';
+    if (model.includes('1.5') || model.includes('2.5') || model === 'gemini-flash-latest') {
+      model = 'gemini-3.6-flash';
+    }
     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
       method: 'POST',
       headers: {
@@ -148,8 +151,17 @@ async function createVectorExecution(
   startedAt: number,
   fellBackFrom?: 'TLM' | 'SLM',
 ): Promise<QueryExecution> {
+  const isGreeting = /^(hi|hello|hey|greetings|good\s+(morning|afternoon|evening)|howdy)\b/i.test(query.trim());
+  if (isGreeting) {
+    return {
+      stream: appendMetadata(textStream("Hello! I am your Klstr Enterprise Knowledge Assistant. I am grounded in your indexed enterprise documents — ask me anything about your uploaded files or data!"), { route: 'VECTOR', grounded: true, fellBackFrom }),
+      route: 'VECTOR',
+      fellBackFrom
+    };
+  }
+
   const ragAnswer = await answerFromRAG(query, tenantId);
-  
+
   const topScore = await ragAnswer.getTopScore();
   if (topScore < 0.25) {
       await logFallback(tenantId, 'VECTOR', 'low_similarity');

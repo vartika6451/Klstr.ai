@@ -33,8 +33,9 @@ export default function Home() {
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 relative flex-shrink-0">
                   <Image
+                    unoptimized
                     src="/images/icon_1.svg"
-                    alt=""
+                    alt="Experienced Team"
                     width={32}
                     height={32}
                     className="object-contain"
@@ -49,8 +50,9 @@ export default function Home() {
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 relative flex-shrink-0">
                   <Image
+                    unoptimized
                     src="/images/icon_2.svg"
-                    alt=""
+                    alt="Flexibility & Scalability"
                     width={32}
                     height={32}
                     className="object-contain"
@@ -65,8 +67,9 @@ export default function Home() {
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 relative flex-shrink-0">
                   <Image
+                    unoptimized
                     src="/images/icon_3.svg"
-                    alt=""
+                    alt="Personalized Solutions"
                     width={32}
                     height={32}
                     className="object-contain"
@@ -81,8 +84,9 @@ export default function Home() {
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 relative flex-shrink-0">
                   <Image
+                    unoptimized
                     src="/images/icon_4.svg"
-                    alt=""
+                    alt="Speed & Security"
                     width={32}
                     height={32}
                     className="object-contain"
@@ -97,8 +101,9 @@ export default function Home() {
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 relative flex-shrink-0">
                   <Image
+                    unoptimized
                     src="/images/icon_5.svg"
-                    alt=""
+                    alt="Affordable Packages"
                     width={32}
                     height={32}
                     className="object-contain"
@@ -113,8 +118,9 @@ export default function Home() {
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 relative flex-shrink-0">
                   <Image
+                    unoptimized
                     src="/images/icon_6.svg"
-                    alt=""
+                    alt="Proven Results"
                     width={32}
                     height={32}
                     className="object-contain"
@@ -196,6 +202,7 @@ export default function Home() {
         <div className="absolute left-1/2 -bottom-12 sm:-bottom-14 -translate-x-1/2 z-20 pointer-events-none">
           <div className="relative w-36 sm:w-44 h-24 sm:h-28">
             <Image
+              unoptimized
               src="/images/icon_7.svg"
               alt=""
               fill

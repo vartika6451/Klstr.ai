@@ -10,6 +10,34 @@ import path from 'path';
 
 const DEMO_TENANT_ID = 'default-workspace';
 
+function formatGeminiContents(messages: Array<{ role: string; content: string }>) {
+  const valid = messages.filter(m => m.content && m.content.trim().length > 0);
+  const raw = valid.map(m => ({
+    role: (m.role === 'assistant' || m.role === 'model' ? 'model' : 'user') as 'user' | 'model',
+    parts: [{ text: m.content.trim() }]
+  }));
+
+  const coalesced: Array<{ role: 'user' | 'model'; parts: Array<{ text: string }> }> = [];
+  for (const item of raw) {
+    const last = coalesced[coalesced.length - 1];
+    if (last && last.role === item.role) {
+      last.parts.push(...item.parts);
+    } else {
+      coalesced.push({ role: item.role, parts: [...item.parts] });
+    }
+  }
+
+  while (coalesced.length > 0 && coalesced[0].role !== 'user') {
+    coalesced.shift();
+  }
+
+  if (coalesced.length === 0) {
+    coalesced.push({ role: 'user', parts: [{ text: 'Hello' }] });
+  }
+
+  return coalesced;
+}
+
 /**
  * Calls Gemini REST API directly for streaming generation.
  * This replaces the broken AI SDK streamText approach.
@@ -25,11 +53,8 @@ async function callGeminiDirect(
     model = 'gemini-3.6-flash';
   }
 
-  // Build the Gemini contents array from conversation history
-  const contents = messages.map(m => ({
-    role: m.role === 'assistant' ? 'model' : 'user',
-    parts: [{ text: m.content }]
-  }));
+  // Build the Gemini contents array with sanitized roles & parts
+  const contents = formatGeminiContents(messages);
 
   const requestBody: Record<string, unknown> = {
     contents,
@@ -52,6 +77,7 @@ async function callGeminiDirect(
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(requestBody),
+    signal: AbortSignal.timeout(12000),
   });
 
   if (!res.ok) {
@@ -115,10 +141,7 @@ async function callGeminiNonStreaming(
     model = 'gemini-3.6-flash';
   }
 
-  const contents = messages.map(m => ({
-    role: m.role === 'assistant' ? 'model' : 'user',
-    parts: [{ text: m.content }]
-  }));
+  const contents = formatGeminiContents(messages);
 
   const requestBody: Record<string, unknown> = {
     contents,
@@ -138,6 +161,7 @@ async function callGeminiNonStreaming(
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(requestBody),
+    signal: AbortSignal.timeout(15000),
   });
 
   if (!res.ok) {
@@ -160,7 +184,25 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { message, history, tenantId, simulateTlmOutage } = body;
+    let message = typeof body.message === 'string' ? body.message.trim() : '';
+    let history: Array<{ role: string; content: string }> = [];
+
+    if (!message && Array.isArray(body.messages) && body.messages.length > 0) {
+      const last = body.messages[body.messages.length - 1];
+      message = (last?.content || '').trim();
+      history = body.messages.slice(0, -1).map((m: any) => ({ role: m.role, content: m.content }));
+    } else if (Array.isArray(body.history)) {
+      history = body.history;
+    } else if (Array.isArray(body.messages)) {
+      const last = body.messages[body.messages.length - 1];
+      if (last && last.content === message) {
+        history = body.messages.slice(0, -1).map((m: any) => ({ role: m.role, content: m.content }));
+      } else {
+        history = body.messages.map((m: any) => ({ role: m.role, content: m.content }));
+      }
+    }
+
+    const { tenantId, simulateTlmOutage } = body;
 
     if (!message || message.trim() === '') {
       return NextResponse.json({ error: "Message cannot be empty" }, { status: 400 });

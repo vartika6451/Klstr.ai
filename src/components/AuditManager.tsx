@@ -78,7 +78,7 @@ export function AuditManager() {
             ) : (
               logs.map(log => (
                 <tr key={log.id} className="hover:bg-[#0a0a0a] transition-colors">
-                  <td className="px-4 py-3 font-mono text-xs text-blue-400">{log.action}</td>
+                  <td className="px-4 py-3 font-mono text-xs text-[#ffbf23] font-semibold">{log.action}</td>
                   <td className="px-4 py-3">{log.recordCount} records</td>
                   <td className="px-4 py-3">{new Date(log.createdAt).toLocaleString()}</td>
                 </tr>
