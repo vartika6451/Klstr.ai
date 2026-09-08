@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
 import { NextRequest, NextResponse } from 'next/server';
 import { getEnv, EnvError } from '@/lib/env';
 import { chatRateLimit } from '@/lib/rate-limit';
@@ -43,9 +45,13 @@ export async function POST(req: NextRequest) {
     }
 
     // The router receives this existing RAG pipeline as a black-box callback.
-    const answerFromRAG = async (query: string): Promise<RagAnswer> => {
+    const answerFromRAG = async (query: string, _workspaceId: string): Promise<RagAnswer> => {
       const google = createGoogleGenerativeAI({ apiKey: env.GEMINI_API_KEY });
       const usedSources = new Set<string>();
+
+      const fastResults = await searchChunks(query, 1);
+      const topScore = fastResults.length > 0 ? fastResults[0].score : 0;
+      
       const messages = [...(history || []), { role: 'user', content: query }];
       const actualModel = env.CHAT_MODEL === 'gemini-1.5-flash' ? 'gemini-flash-latest' : env.CHAT_MODEL;
 
@@ -160,6 +166,7 @@ Do not guess or use outside knowledge. If the tools don't return the answer, sta
             return 0;
           }
         },
+        getTopScore: async () => topScore,
       };
     };
 
@@ -174,9 +181,10 @@ Do not guess or use outside knowledge. If the tools don't return the answer, sta
 
     return new Response(execution.stream.pipeThrough(transform), {
       headers: {
-        'Content-Type': 'text/plain', // sending raw text + source metadata at end
-        'Cache-Control': 'no-cache',
+        'Content-Type': 'text/plain',
+        'Cache-Control': 'no-cache, no-transform',
         'Connection': 'keep-alive',
+        'X-Accel-Buffering': 'no'
       }
     });
 

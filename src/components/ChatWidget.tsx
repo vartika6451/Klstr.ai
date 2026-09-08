@@ -10,9 +10,11 @@ interface Message {
   content: string;
   sources?: string[];
   isError?: boolean;
-  route?: 'TLM' | 'VECTOR';
+  route?: 'TLM' | 'SLM' | 'VECTOR' | 'BLOCKED';
   latencyMs?: number;
-  fellBackFrom?: 'TLM';
+  fellBackFrom?: 'TLM' | 'SLM';
+  grounded?: boolean;
+  blocked?: boolean;
 }
 
 export default function ChatWidget() {
@@ -24,6 +26,21 @@ export default function ChatWidget() {
   
   const abortControllerRef = useRef<AbortController | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => {
+    const saved = sessionStorage.getItem('klstr_chat_messages');
+    if (saved) {
+      try { setMessages(JSON.parse(saved)); } catch (e) {}
+    }
+    setIsInitialized(true);
+  }, []);
+
+  useEffect(() => {
+    if (isInitialized) {
+      sessionStorage.setItem('klstr_chat_messages', JSON.stringify(messages));
+    }
+  }, [messages, isInitialized]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -145,7 +162,7 @@ export default function ChatWidget() {
             )}
             
             {messages.map(m => (
-              <MessageBubble key={m.id} id={m.id} role={m.role} content={m.content} sources={m.sources} isError={m.isError} route={m.route} latencyMs={m.latencyMs} fellBackFrom={m.fellBackFrom} />
+              <MessageBubble key={m.id} id={m.id} role={m.role} content={m.content} sources={m.sources} isError={m.isError} route={m.route} latencyMs={m.latencyMs} fellBackFrom={m.fellBackFrom} grounded={m.grounded} blocked={m.blocked} />
             ))}
             
             {isTyping && (

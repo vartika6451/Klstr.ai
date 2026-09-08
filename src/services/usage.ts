@@ -7,6 +7,8 @@ interface QueryLogRow { route: string; costUsd: number; latencyMs: number; }
 export async function getUsageForTenant(tenantId: string) {
   const logs = await prisma.$queryRaw<QueryLogRow[]>`SELECT route, costUsd, latencyMs FROM QueryLog WHERE tenantId = ${tenantId}`;
   const tlm = logs.filter(log => log.route === 'TLM');
+  const slm = logs.filter(log => log.route === 'SLM');
+  const blocked = logs.filter(log => log.route === 'BLOCKED');
   const vector = logs.filter(log => log.route === 'VECTOR');
   const actualCostUsd = logs.reduce((total, log) => total + log.costUsd, 0);
   const averageVectorCost = vector.length
@@ -20,11 +22,11 @@ export async function getUsageForTenant(tenantId: string) {
   return {
     tenantId,
     totalQueries: logs.length,
-    routes: { TLM: tlm.length, VECTOR: vector.length },
+    routes: { TLM: tlm.length, SLM: slm.length, VECTOR: vector.length, BLOCKED: blocked.length },
     actualCostUsd,
     baselineCostUsd,
     costSavedUsd: Math.max(0, baselineCostUsd - actualCostUsd),
     costSavedPercent: baselineCostUsd > 0 ? ((baselineCostUsd - actualCostUsd) / baselineCostUsd) * 100 : 0,
-    averageLatencyMs: { TLM: averageLatency(tlm), VECTOR: averageLatency(vector) },
+    averageLatencyMs: { TLM: averageLatency(tlm), SLM: averageLatency(slm), VECTOR: averageLatency(vector) },
   };
 }

@@ -49,3 +49,13 @@ model FallbackLog {
 
   @@index([tenantId, createdAt])
 }
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  tenantId    String
+  action      String
+  recordCount Int
+  createdAt   DateTime @default(now())
+
+  @@index([tenantId, createdAt])
+}

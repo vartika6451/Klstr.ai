@@ -1,5 +1,6 @@
 import ChatWidget from '@/components/ChatWidget';
 import { DocumentManager } from '@/components/DocumentManager';
+import { AuditManager } from '@/components/AuditManager';
 import Link from 'next/link';
 import { MessageCircle } from 'lucide-react';
 
@@ -13,6 +14,7 @@ export default function EnterpriseGenAIPage() {
       
       <div className="w-full max-w-3xl text-left mb-12">
         <DocumentManager />
+        <AuditManager />
       </div>
 
       <Link href="/klstr-enterprise-gen-ai/chat" className="inline-flex items-center gap-2 bg-white text-black hover:bg-gray-200 px-8 py-4 rounded-full font-bold text-lg transition shadow-lg hover:shadow-xl mb-12">
