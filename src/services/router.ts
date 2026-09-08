@@ -68,11 +68,9 @@ async function findStaticFact(query: string, tenantId: string) {
 export async function decideRoute(query: string, tenantId: string): Promise<QueryRoute> {
   if (await findStaticFact(query, tenantId)) return 'TLM';
   
-  const docKeywords = ['policy', 'contract', 'document', 'according to', 'clause', 'section', 'report', 'file', 'csv', 'excel', 'data', 'spreadsheet'];
-  const lowerQuery = query.toLowerCase();
-  const needsVector = docKeywords.some(kw => lowerQuery.includes(kw));
-  
-  return needsVector ? 'VECTOR' : 'SLM';
+  // Always route to VECTOR (RAG) — this is a document-grounded assistant.
+  // The SLM route has no document context and would hallucinate.
+  return 'VECTOR';
 }
 
 function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
@@ -120,7 +118,7 @@ async function runSlm(query: string) {
   }
 
   if (env.GEMINI_API_KEY) {
-    const model = env.CHAT_MODEL === 'gemini-1.5-flash' ? 'gemini-flash-latest' : env.CHAT_MODEL;
+    const model = env.CHAT_MODEL === 'gemini-1.5-flash' ? 'gemini-3.6-flash' : env.CHAT_MODEL;
     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
       method: 'POST',
       headers: {
@@ -153,10 +151,10 @@ async function createVectorExecution(
   const ragAnswer = await answerFromRAG(query, tenantId);
   
   const topScore = await ragAnswer.getTopScore();
-  if (topScore < 0.5) {
+  if (topScore < 0.25) {
       await logFallback(tenantId, 'VECTOR', 'low_similarity');
       return { 
-          stream: appendMetadata(textStream("I couldn't find a confident answer in your documents."), { route: 'VECTOR', grounded: false, fellBackFrom }), 
+          stream: appendMetadata(textStream("I couldn't find relevant information in your uploaded documents for this question. Please try rephrasing or ensure the relevant documents are uploaded."), { route: 'VECTOR', grounded: false, fellBackFrom }), 
           route: 'VECTOR', 
           fellBackFrom 
       };

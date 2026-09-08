@@ -81,41 +81,51 @@ export async function deleteDocumentFromIndex(docId: string) {
   });
 }
 
-export async function searchChunks(query: string, topK: number = 6) {
+export async function searchChunks(query: string, topK: number = 8) {
   const index = new LocalIndex(indexPath);
   if (!(await index.isIndexCreated())) return [];
 
-  // 1. Vector Search (fetch more to rerank)
+  // 1. Vector Search (fetch more candidates for hybrid reranking)
   const [queryVector] = await generateEmbeddings({ input: [query], taskType: 'RETRIEVAL_QUERY' });
-  const results = await index.queryItems(queryVector, query, topK * 3);
+  const results = await index.queryItems(queryVector, query, topK * 4);
   
-  // 2. Keyword Search (BM25-lite / TF scoring)
-  const queryTerms = query.toLowerCase().split(/\W+/).filter(t => t.length > 2);
+  // 2. Keyword Search (hybrid scoring)
+  const queryLower = query.toLowerCase();
+  const queryTerms = queryLower.split(/\W+/).filter(t => t.length > 2);
   
   const hybridResults = results.map(r => {
     const text = (r.item.metadata.text as string).toLowerCase();
     let keywordScore = 0;
     
+    // Term frequency scoring
     for (const term of queryTerms) {
       if (text.includes(term)) {
-         // Count occurrences
-         const count = (text.match(new RegExp(term, 'g')) || []).length;
+         const count = (text.match(new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length;
          keywordScore += count;
       }
     }
     
     // Boost vector score based on keyword density
-    // For example, each keyword occurrence adds 0.02 to the cosine similarity
-    const boost = Math.min(keywordScore * 0.02, 0.2); // Cap the boost at 0.2
+    const termBoost = Math.min(keywordScore * 0.04, 0.3);
+    
+    // Exact phrase match bonus (if the query is short enough to be a meaningful phrase)
+    let phraseBoost = 0;
+    if (queryLower.length > 5 && queryLower.length < 100 && text.includes(queryLower)) {
+      phraseBoost = 0.15;
+    }
     
     return {
       item: r.item.metadata as unknown as ChunkMetadata,
-      score: r.score + boost
+      score: r.score + termBoost + phraseBoost
     };
   });
 
-  // 3. Re-rank and slice
+  // 3. Re-rank, filter noise, and slice
   hybridResults.sort((a, b) => b.score - a.score);
   
-  return hybridResults.slice(0, topK);
+  // Filter out very low scoring results (noise)
+  const filtered = hybridResults.filter(r => r.score >= 0.15);
+  
+  return filtered.slice(0, topK);
 }
+

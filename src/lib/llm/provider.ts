@@ -14,7 +14,7 @@ export async function streamChat(request: ChatRequest): Promise<ReadableStream<s
   const env = getEnv();
 
   if (env.GEMINI_API_KEY) {
-    const actualModel = env.CHAT_MODEL === 'gemini-1.5-flash' ? 'gemini-flash-latest' : env.CHAT_MODEL;
+    const actualModel = env.CHAT_MODEL === 'gemini-1.5-flash' ? 'gemini-3.6-flash' : env.CHAT_MODEL;
     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${actualModel}:streamGenerateContent?alt=sse&key=${env.GEMINI_API_KEY}`, {
       method: 'POST',
       headers: {
