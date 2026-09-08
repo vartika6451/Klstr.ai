@@ -45,96 +45,89 @@ export async function POST(req: NextRequest) {
     }
 
     // The router receives this existing RAG pipeline as a black-box callback.
+    
     const answerFromRAG = async (query: string, _workspaceId: string): Promise<RagAnswer> => {
       const google = createGoogleGenerativeAI({ apiKey: env.GEMINI_API_KEY });
       const usedSources = new Set<string>();
 
-      const fastResults = await searchChunks(query, 1);
-      const topScore = fastResults.length > 0 ? fastResults[0].score : 0;
+      // 1. Fetch Vector Chunks
+      const vectorResults = await searchChunks(query, env.RETRIEVAL_TOP_K);
+      const relevantVectors = vectorResults.filter(r => r.score >= env.RELEVANCE_THRESHOLD);
+      const topScore = vectorResults.length > 0 ? vectorResults[0].score : 0;
       
+      let documentContext = "";
+      if (relevantVectors.length > 0) {
+        documentContext += "DOCUMENT EXCERPTS:\n";
+        relevantVectors.forEach((r, idx) => {
+           usedSources.add(r.item.docName);
+           documentContext += `--- Excerpt ${idx + 1} [${r.item.docName}] ---\n${r.item.text}\n\n`;
+        });
+      }
+
+      // 2. Fetch CSV Data (Keyword Match)
+      let csvContext = "";
+      const csvDir = require('path').join(process.cwd(), '.data', 'csvs');
+      if (require('fs').existsSync(csvDir)) {
+         const files = require('fs').readdirSync(csvDir);
+         for (const file of files) {
+            if (!file.endsWith('.json')) continue;
+            const data = JSON.parse(require('fs').readFileSync(require('path').join(csvDir, file), 'utf8'));
+            const lowerQuery = query.toLowerCase();
+            const matchedRows = data.data.filter((row: any) => JSON.stringify(row).toLowerCase().includes(lowerQuery) || lowerQuery.includes(data.docName.toLowerCase().replace('.csv','')));
+            
+            if (matchedRows.length > 0) {
+               usedSources.add(data.docName);
+               csvContext += `--- CSV Data [${data.docName}] ---\n`;
+               csvContext += JSON.stringify(matchedRows.slice(0, 10)) + "\n\n";
+            }
+         }
+      }
+      
+      const combinedContext = documentContext + csvContext;
+
       const messages = [...(history || []), { role: 'user', content: query }];
-      const actualModel = env.CHAT_MODEL === 'gemini-1.5-flash' ? 'gemini-flash-latest' : env.CHAT_MODEL;
+      let actualModel = env.CHAT_MODEL || 'gemini-flash-latest';
+      if (actualModel === 'gemini-1.5-flash' || actualModel === 'gemini-1.5-flash-latest' || actualModel.includes('2.5')) {
+          actualModel = 'gemini-flash-latest';
+      }
 
       let generationFailed = false;
       const result = await callLegacyRagStream({
-      model: google(actualModel),
-      system: `You are an enterprise AI agent. You have tools to search the knowledge base and query structured data (CSVs).
-ALWAYS use 'search_knowledge_base' to look up policies, documents, and unstructured text.
-ALWAYS use 'query_structured_data' to lookup specific rows or search across uploaded CSV spreadsheets.
-If a user asks a combined question, use BOTH tools before answering.
-Synthesize the final answer clearly and include inline citations (e.g. "[Policy.pdf]").
-Do not guess or use outside knowledge. If the tools don't return the answer, state that you don't know.`,
-      messages,
-      maxSteps: 5,
-      onError: () => { generationFailed = true; },
-      tools: {
-          search_knowledge_base: legacyTool({
-          description: 'Search internal documents, PDFs, and policies.',
-          parameters: z.object({ query: z.string() }),
-          execute: async ({ query }: { query: string }) => {
-            const results = await searchChunks(query, env.RETRIEVAL_TOP_K);
-            const relevant = results.filter(r => r.score >= env.RELEVANCE_THRESHOLD);
-            relevant.forEach(r => usedSources.add(r.item.docName));
-            return relevant.map(r => ({ doc: r.item.docName, text: r.item.text }));
-          }
-        }),
-          query_structured_data: legacyTool({
-          description: 'Query uploaded CSV files for specific rows or matching text.',
-          parameters: z.object({
-            search_term: z.string().optional().describe('Text to search across all rows (optional)'),
-            row_index: z.number().optional().describe('Specific row number to fetch (1-indexed) (optional)')
-          }),
-          execute: async ({ search_term, row_index }: { search_term?: string, row_index?: number }) => {
-            const csvDir = path.join(process.cwd(), '.data', 'csvs');
-            if (!fs.existsSync(csvDir)) return { error: "No CSVs uploaded." };
-            
-            const files = fs.readdirSync(csvDir);
-            const allResults = [];
-            
-            for (const file of files) {
-               if (!file.endsWith('.json')) continue;
-               const data = JSON.parse(fs.readFileSync(path.join(csvDir, file), 'utf8')) as { docName: string; data: unknown[] };
-               usedSources.add(data.docName);
-               
-               let rows = data.data;
-               if (row_index !== undefined) {
-                 rows = rows.filter((_, i: number) => i + 1 === row_index);
-               }
-               if (search_term) {
-                 const lowerTerm = search_term.toLowerCase();
-                 rows = rows.filter(row => JSON.stringify(row).toLowerCase().includes(lowerTerm));
-               }
-               allResults.push({ file: data.docName, matches: rows.slice(0, 10) }); // limit to 10
-            }
-            return allResults;
-          }
-        })
-      }
+        model: google(actualModel),
+        system: `You are an expert enterprise AI assistant. Your goal is to provide intelligent, synthesized, and highly readable answers based ONLY on the provided knowledge base and data context.
+When asked a question:
+1. Read the provided DOCUMENT EXCERPTS and CSV DATA carefully.
+2. SYNTHESIZE the information into a smart, well-structured, comprehensive answer. Answer the user's question directly. DO NOT just copy-paste raw excerpts or strings of text.
+3. Use markdown formatting (bullet points, bold text, tables) to make your answer professional and easy to read.
+4. Always include inline citations (e.g., "[Policy.pdf]") when referencing facts.
+5. If the provided context does not contain the answer, clearly state that you don't have the information. DO NOT guess or hallucinate.
+
+PROVIDED CONTEXT:
+${combinedContext || 'No relevant documents or data found for this query.'}`,
+        messages,
+        onError: (err: any) => { 
+          console.error("AI SDK StreamText onError triggered! Error details:", err);
+          generationFailed = true; 
+        }
       });
 
-      // Gemini can reject a streamed generation after the response starts (for
-      // example, when its free-tier request quota is exhausted). Preserve a
-      // useful document-grounded response instead of letting that stream error
-      // turn into the generic client-side failure message.
       let usedDocumentFallback = false;
       const reader = result.textStream.getReader();
       let receivedModelText = false;
       const writeDocumentFallback = async (controller: ReadableStreamDefaultController<string>) => {
         usedDocumentFallback = true;
         try {
-          const results = await searchChunks(query, env.RETRIEVAL_TOP_K);
-          const relevant = results.filter(item => item.score >= env.RELEVANCE_THRESHOLD);
-          relevant.forEach(item => usedSources.add(item.item.docName));
-          if (relevant.length === 0) {
+          if (relevantVectors.length === 0) {
             controller.enqueue('The AI response service is temporarily unavailable, and no sufficiently relevant passages were found in your uploaded documents. Please try again shortly.');
           } else {
-            const excerpts = relevant.slice(0, 3).map(item => `• [${item.item.docName}] ${item.item.text}`).join('\n\n');
+            const excerpts = relevantVectors.slice(0, 3).map(item => `• [${item.item.docName}] ${item.item.text}`).join('\n\n');
             controller.enqueue(`The AI response service is temporarily unavailable, so here are the most relevant passages from your uploaded documents:\n\n${excerpts}`);
           }
         } catch {
           controller.enqueue('The AI response service is temporarily unavailable. Please try again after the provider quota resets.');
         }
       };
+      
       const resilientStream = new ReadableStream<string>({
         async pull(controller) {
           try {
@@ -146,7 +139,8 @@ Do not guess or use outside knowledge. If the tools don't return the answer, sta
             }
             receivedModelText = true;
             controller.enqueue(value);
-          } catch {
+          } catch (error) {
+            console.error("StreamText Pull Error:", error);
             await writeDocumentFallback(controller);
             controller.close();
           }

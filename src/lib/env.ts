@@ -20,15 +20,16 @@ export class EnvError extends Error {
   }
 }
 
+const clean = (val?: string) => val?.replace(/^["']|["']$/g, '').trim();
 export function getEnv() {
   const parsed = envSchema.safeParse({
-    ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
-    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
-    VOYAGE_API_KEY: process.env.VOYAGE_API_KEY,
-    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
-    GEMINI_EMBEDDING_MODEL: process.env.GEMINI_EMBEDDING_MODEL,
-    GROQ_API_KEY: process.env.GROQ_API_KEY,
-    CHAT_MODEL: process.env.CHAT_MODEL,
+    ANTHROPIC_API_KEY: clean(process.env.ANTHROPIC_API_KEY),
+    OPENAI_API_KEY: clean(process.env.OPENAI_API_KEY),
+    VOYAGE_API_KEY: clean(process.env.VOYAGE_API_KEY),
+    GEMINI_API_KEY: clean(process.env.GEMINI_API_KEY),
+    GEMINI_EMBEDDING_MODEL: clean(process.env.GEMINI_EMBEDDING_MODEL),
+    GROQ_API_KEY: clean(process.env.GROQ_API_KEY),
+    CHAT_MODEL: clean(process.env.CHAT_MODEL),
     MAX_CHAT_TOKENS: process.env.MAX_CHAT_TOKENS,
     RETRIEVAL_TOP_K: process.env.RETRIEVAL_TOP_K,
     RELEVANCE_THRESHOLD: process.env.RELEVANCE_THRESHOLD,

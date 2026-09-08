@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { FileUp, Trash2, Loader2, FileText } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { FileUp, Trash2, Loader2, FileText, MessageCircle } from 'lucide-react';
 
 export interface DocumentRegistryEntry {
   id: string;
@@ -11,10 +12,12 @@ export interface DocumentRegistryEntry {
 }
 
 export function DocumentManager() {
+  const router = useRouter();
   const [documents, setDocuments] = useState<DocumentRegistryEntry[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasUploadedDocuments, setHasUploadedDocuments] = useState(false);
 
   const fetchDocs = async () => {
     try {
@@ -59,6 +62,9 @@ export function DocumentManager() {
       }
       
       await fetchDocs();
+      if (!failed || failed.length === 0) {
+        setHasUploadedDocuments(true);
+      }
     } catch (e: any) {
       setError(e.message);
     } finally {
@@ -87,7 +93,7 @@ export function DocumentManager() {
         <input 
           type="file" 
           multiple 
-          accept=".pdf,.docx,.txt,.md"
+          accept=".pdf,.docx,.txt,.md,.csv"
           onChange={handleFileUpload}
           disabled={isUploading}
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-wait"
@@ -97,9 +103,20 @@ export function DocumentManager() {
           <span className="font-medium text-sm">
             {isUploading ? "Uploading & Indexing..." : "Click or drag files to upload"}
           </span>
-          <span className="text-xs text-gray-600">Supports .pdf, .docx, .txt, .md (Max 15MB)</span>
+          <span className="text-xs text-gray-600">Supports .pdf, .docx, .txt, .md, .csv (Max 15MB)</span>
         </div>
       </div>
+
+      {hasUploadedDocuments && (
+        <button
+          type="button"
+          onClick={() => router.push('/klstr-enterprise-gen-ai/chat')}
+          className="w-full mb-6 inline-flex items-center justify-center gap-2 bg-blue-600 text-white hover:bg-blue-500 px-5 py-3 rounded-xl font-semibold transition-colors"
+        >
+          <MessageCircle className="w-5 h-5" />
+          Chat with your documents
+        </button>
+      )}
 
       {error && (
         <div className="bg-red-900/20 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg mb-6 text-sm">

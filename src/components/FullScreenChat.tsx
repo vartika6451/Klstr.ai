@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from 'react';
-import { Send, ArrowLeft, Loader2, MessageSquare } from 'lucide-react';
+import { Send, ArrowLeft, Loader2, MessageSquare, Plus } from 'lucide-react';
 import { MessageBubble } from './ui/MessageBubble';
 import { TypingIndicator } from './ui/TypingIndicator';
 import Link from 'next/link';
@@ -23,9 +23,11 @@ export function FullScreenChat() {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [simulateTlmOutage, setSimulateTlmOutage] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   
   const abortControllerRef = useRef<AbortController | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatAreaRef = useRef<HTMLElement>(null);
+  const shouldAutoScrollRef = useRef(true);
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
@@ -43,8 +45,49 @@ export function FullScreenChat() {
   }, [messages, isInitialized]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const chatArea = chatAreaRef.current;
+    if (!chatArea || !shouldAutoScrollRef.current) return;
+
+    chatArea.scrollTo({ top: chatArea.scrollHeight, behavior: 'smooth' });
   }, [messages, isTyping]);
+
+  
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    
+    setIsUploading(true);
+    const formData = new FormData();
+    for (let i = 0; i < files.length; i++) {
+      formData.append('files', files[i]);
+    }
+
+    try {
+      const res = await fetch('/api/documents', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      
+      const failed = data.results?.filter((r: any) => r.status === 'failed');
+      if (failed && failed.length > 0) {
+        alert(`Failed to upload: ${failed.map((f:any) => `${f.fileName} (${f.error})`).join(', ')}`);
+      } else {
+        // Success: push a system message indicating upload success
+        setMessages(prev => [...prev, {
+            id: Date.now().toString(),
+            role: 'assistant',
+            content: `✅ Successfully uploaded and indexed ${files.length} document(s). You can now ask questions about them.`
+        }]);
+      }
+    } catch (e: any) {
+      alert(e.message);
+    } finally {
+      setIsUploading(false);
+      e.target.value = '';
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,6 +104,7 @@ export function FullScreenChat() {
     };
     
     setInput('');
+    shouldAutoScrollRef.current = true;
     setMessages(prev => [...prev, userMessage]);
     setIsTyping(true);
 
@@ -148,7 +192,15 @@ export function FullScreenChat() {
       </header>
 
       {/* Chat Area */}
-      <main className="flex-1 overflow-y-auto p-4 sm:p-6 bg-[#050505]">
+      <main
+        ref={chatAreaRef}
+        onScroll={e => {
+          const chatArea = e.currentTarget;
+          const distanceFromBottom = chatArea.scrollHeight - chatArea.scrollTop - chatArea.clientHeight;
+          shouldAutoScrollRef.current = distanceFromBottom < 96;
+        }}
+        className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 bg-[#050505]"
+      >
         <div className="max-w-4xl mx-auto flex flex-col h-full">
           {messages.length === 0 && (
             <div className="flex-1 flex flex-col items-center justify-center text-gray-500 text-center">
@@ -171,7 +223,6 @@ export function FullScreenChat() {
               <TypingIndicator />
             </div>
           )}
-          <div ref={messagesEndRef} />
         </div>
       </main>
 
@@ -179,12 +230,25 @@ export function FullScreenChat() {
       <footer className="p-4 sm:p-6 bg-[#0a0a0a] border-t border-gray-800 shrink-0">
         <div className="max-w-4xl mx-auto">
           <form onSubmit={handleSubmit} className="relative flex items-center">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center">
+              <label className={`p-2 text-gray-400 hover:text-white transition cursor-pointer ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                {isUploading ? <Loader2 className="w-5 h-5 animate-spin text-blue-500" /> : <Plus className="w-5 h-5" />}
+                <input 
+                  type="file" 
+                  multiple 
+                  accept=".pdf,.docx,.txt,.md,.csv"
+                  onChange={handleFileUpload}
+                  disabled={isUploading}
+                  className="hidden"
+                />
+              </label>
+            </div>
             <input 
               type="text" 
               value={input}
               onChange={e => setInput(e.target.value)}
               placeholder="Message Enterprise Assistant..."
-              className="w-full bg-[#111] border border-gray-700 text-white rounded-xl pl-6 pr-16 py-4 text-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-shadow shadow-inner"
+              className="w-full bg-[#111] border border-gray-700 text-white rounded-xl pl-12 pr-16 py-4 text-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-shadow shadow-inner"
               maxLength={4000}
             />
             <button 

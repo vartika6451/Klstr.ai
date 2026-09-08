@@ -98,23 +98,49 @@ function appendMetadata(stream: ReadableStream<string>, metadata: Record<string,
 
 async function runSlm(query: string) {
   const env = getEnv();
-  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${env.GROQ_API_KEY}`
-    },
-    body: JSON.stringify({
-      model: 'llama-3.1-8b-instant',
-      messages: [{ role: 'user', content: query }],
-      max_tokens: env.MAX_CHAT_TOKENS,
-    })
-  });
-  if (!res.ok) throw new Error("SLM failed");
-  const data = await res.json();
-  const text = data.choices?.[0]?.message?.content || '';
-  const tokens = data.usage?.total_tokens || 0;
-  return { text, tokens };
+  if (env.GROQ_API_KEY) {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${env.GROQ_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'llama-3.1-8b-instant',
+        messages: [{ role: 'user', content: query }],
+        max_tokens: env.MAX_CHAT_TOKENS,
+      })
+    });
+    if (!res.ok) throw new Error(`SLM failed: ${res.status}`);
+    const data = await res.json();
+    return {
+      text: data.choices?.[0]?.message?.content || '',
+      tokens: data.usage?.total_tokens || 0,
+    };
+  }
+
+  if (env.GEMINI_API_KEY) {
+    const model = env.CHAT_MODEL === 'gemini-1.5-flash' ? 'gemini-flash-latest' : env.CHAT_MODEL;
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': env.GEMINI_API_KEY,
+      },
+      body: JSON.stringify({
+        contents: [{ role: 'user', parts: [{ text: query }] }],
+        generationConfig: { maxOutputTokens: env.MAX_CHAT_TOKENS },
+      }),
+    });
+    if (!res.ok) throw new Error(`SLM failed: ${res.status}`);
+    const data = await res.json();
+    return {
+      text: data.candidates?.[0]?.content?.parts?.map((part: { text?: string }) => part.text || '').join('') || '',
+      tokens: data.usageMetadata?.totalTokenCount || 0,
+    };
+  }
+
+  throw new Error('No fast chat provider configured.');
 }
 
 async function createVectorExecution(

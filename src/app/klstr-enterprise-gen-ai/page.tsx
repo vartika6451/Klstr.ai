@@ -1,4 +1,3 @@
-import ChatWidget from '@/components/ChatWidget';
 import { DocumentManager } from '@/components/DocumentManager';
 import { AuditManager } from '@/components/AuditManager';
 import Link from 'next/link';
@@ -22,7 +21,6 @@ export default function EnterpriseGenAIPage() {
         Open Full Screen Chat
       </Link>
 
-      <ChatWidget />
-    </div>
+          </div>
   );
 }
