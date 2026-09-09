@@ -1,0 +1,67 @@
+{
+  "docName": "Industrial Heavy Turbine Vibration & Telematics (DataHub)",
+  "category": "Industrial IoT",
+  "data": [
+    {
+      "timestamp": "2026-09-08T15:05:01.200Z",
+      "turbine_id": "TRB-GT-401",
+      "rpm": 3600,
+      "vibration_rms_mm_s": 1.84,
+      "bearing_temp_c": 72.4,
+      "lube_oil_pressure_bar": 3.42,
+      "iso_status": "GOOD_A",
+      "anomaly_score": 0.04
+    },
+    {
+      "timestamp": "2026-09-08T15:05:01.200Z",
+      "turbine_id": "TRB-GT-402",
+      "rpm": 3598,
+      "vibration_rms_mm_s": 3.12,
+      "bearing_temp_c": 84.1,
+      "lube_oil_pressure_bar": 3.1,
+      "iso_status": "ACCEPTABLE_B",
+      "anomaly_score": 0.18
+    },
+    {
+      "timestamp": "2026-09-08T15:05:01.200Z",
+      "turbine_id": "TRB-ST-108",
+      "rpm": 3000,
+      "vibration_rms_mm_s": 4.85,
+      "bearing_temp_c": 94.6,
+      "lube_oil_pressure_bar": 2.75,
+      "iso_status": "WARNING_C",
+      "anomaly_score": 0.68
+    },
+    {
+      "timestamp": "2026-09-08T15:05:01.200Z",
+      "turbine_id": "TRB-GT-403",
+      "rpm": 3601,
+      "vibration_rms_mm_s": 1.45,
+      "bearing_temp_c": 69.8,
+      "lube_oil_pressure_bar": 3.48,
+      "iso_status": "GOOD_A",
+      "anomaly_score": 0.02
+    },
+    {
+      "timestamp": "2026-09-08T15:05:01.200Z",
+      "turbine_id": "TRB-ST-109",
+      "rpm": 3000,
+      "vibration_rms_mm_s": 2.05,
+      "bearing_temp_c": 74,
+      "lube_oil_pressure_bar": 3.35,
+      "iso_status": "GOOD_A",
+      "anomaly_score": 0.06
+    }
+  ],
+  "columns": [
+    "timestamp",
+    "turbine_id",
+    "rpm",
+    "vibration_rms_mm_s",
+    "bearing_temp_c",
+    "lube_oil_pressure_bar",
+    "iso_status",
+    "anomaly_score"
+  ],
+  "ingestedAt": "2026-09-08T16:17:48.176Z"
+}

@@ -42,109 +42,145 @@ function formatGeminiContents(messages: Array<{ role: string; content: string }>
  * Calls Gemini REST API directly for streaming generation.
  * This replaces the broken AI SDK streamText approach.
  */
+const WORKING_GEMINI_MODELS = [
+  'gemini-3.7-flash',
+  'gemini-3.5-flash-lite',
+  'gemini-flash-lite-latest',
+  'gemini-3.6-flash'
+];
+
+function getCandidateModels(preferredModel?: string): string[] {
+  const models = [
+    preferredModel,
+    ...WORKING_GEMINI_MODELS
+  ].filter(Boolean) as string[];
+
+  // Clean legacy/deprecated names
+  const cleaned = models.map(m => {
+    if (m === 'gemini-1.5-flash' || m === 'gemini-1.5-flash-latest' || m.includes('2.5')) {
+      return 'gemini-3.7-flash';
+    }
+    return m;
+  });
+
+  return Array.from(new Set(cleaned));
+}
+
+/**
+ * Calls Gemini REST API directly for streaming generation with automatic model failover.
+ */
 async function callGeminiDirect(
   systemPrompt: string,
   messages: Array<{ role: string; content: string }>,
   env: ReturnType<typeof getEnv>
-): Promise<ReadableStream<string>> {
-  // Resolve the model name
-  let model = env.CHAT_MODEL || 'gemini-3.6-flash';
-  if (model === 'gemini-1.5-flash' || model === 'gemini-1.5-flash-latest' || model.includes('2.5')) {
-    model = 'gemini-3.6-flash';
-  }
-
-  // Build the Gemini contents array with sanitized roles & parts
+): Promise<{ stream: ReadableStream<string>; modelUsed: string }> {
+  const candidateModels = getCandidateModels(env.CHAT_MODEL);
   const contents = formatGeminiContents(messages);
 
   const requestBody: Record<string, unknown> = {
     contents,
     generationConfig: {
       maxOutputTokens: env.MAX_CHAT_TOKENS,
-      temperature: 0.3, // Lower temperature for more factual, grounded answers
+      temperature: 0.3,
     },
   };
 
-  // Add system instruction if provided
   if (systemPrompt) {
     requestBody.systemInstruction = {
       parts: [{ text: systemPrompt }]
     };
   }
 
-  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${env.GEMINI_API_KEY}`;
+  let lastError: Error | null = null;
 
-  const res = await fetch(apiUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(requestBody),
-    signal: AbortSignal.timeout(12000),
-  });
+  for (const model of candidateModels) {
+    try {
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${env.GEMINI_API_KEY}`;
 
-  if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`Gemini API error (${res.status}): ${errText}`);
-  }
+      const res = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody),
+        signal: AbortSignal.timeout(35000), // Generous 35s timeout to avoid premature aborts
+      });
 
-  // Parse the SSE stream from Gemini into a text stream
-  const decoder = new TextDecoder();
-  let sseBuffer = '';
+      if (!res.ok) {
+        const errText = await res.text();
+        console.warn(`[Gemini] Model ${model} returned HTTP ${res.status}: ${errText.slice(0, 150)}`);
+        // If 429 quota or 503 high demand or 404, try next candidate model
+        if (res.status === 429 || res.status === 503 || res.status === 404) {
+          lastError = new Error(`Gemini ${model} error (${res.status}): ${errText}`);
+          continue;
+        }
+        throw new Error(`Gemini API error (${res.status}): ${errText}`);
+      }
 
-  return new ReadableStream<string>({
-    async start(controller) {
-      const reader = res.body!.getReader();
-      let errored = false;
-      try {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
+      // Parse the SSE stream from Gemini into a text stream
+      const decoder = new TextDecoder();
+      let sseBuffer = '';
 
-          sseBuffer += decoder.decode(value, { stream: true });
-          const lines = sseBuffer.split('\n');
-          sseBuffer = lines.pop() || '';
+      const stream = new ReadableStream<string>({
+        async start(controller) {
+          const reader = res.body!.getReader();
+          let errored = false;
+          try {
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
 
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              const dataStr = line.slice(6).trim();
-              if (dataStr === '[DONE]') continue;
-              try {
-                const data = JSON.parse(dataStr);
-                const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-                if (text) {
-                  controller.enqueue(text);
+              sseBuffer += decoder.decode(value, { stream: true });
+              const lines = sseBuffer.split('\n');
+              sseBuffer = lines.pop() || '';
+
+              for (const line of lines) {
+                if (line.startsWith('data: ')) {
+                  const dataStr = line.slice(6).trim();
+                  if (dataStr === '[DONE]') continue;
+                  try {
+                    const data = JSON.parse(dataStr);
+                    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (text) {
+                      controller.enqueue(text);
+                    }
+                  } catch {
+                    // Ignore partial JSON chunks
+                  }
                 }
-              } catch {
-                // Ignore partial JSON chunks
               }
             }
+          } catch (e) {
+            console.error(`Gemini stream read error on ${model}:`, e);
+            errored = true;
+            try { controller.error(e); } catch {}
+          } finally {
+            if (!errored) {
+              try { controller.close(); } catch {}
+            }
+            try { reader.releaseLock(); } catch {}
           }
         }
-      } catch (e) {
-        console.error('Gemini stream read error:', e);
-        errored = true;
-        try { controller.error(e); } catch {}
-      } finally {
-        if (!errored) {
-          try { controller.close(); } catch {}
-        }
-        try { reader.releaseLock(); } catch {}
-      }
+      });
+
+      return { stream, modelUsed: model };
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      console.warn(`[Gemini] Error attempting model ${model}: ${errorMsg}. Trying next candidate if available...`);
+      lastError = err instanceof Error ? err : new Error(errorMsg);
     }
-  });
+  }
+
+  throw lastError || new Error('All Gemini model candidates failed');
 }
 
 /**
- * Non-streaming Gemini call as a fallback if streaming fails.
+ * Non-streaming Gemini call as a fallback with model failover.
  */
 async function callGeminiNonStreaming(
   systemPrompt: string,
   messages: Array<{ role: string; content: string }>,
   env: ReturnType<typeof getEnv>
-): Promise<string> {
-  let model = env.CHAT_MODEL || 'gemini-3.6-flash';
-  if (model === 'gemini-1.5-flash' || model === 'gemini-1.5-flash-latest' || model.includes('2.5')) {
-    model = 'gemini-3.6-flash';
-  }
-
+): Promise<{ text: string; modelUsed: string }> {
+  const candidateModels = getCandidateModels(env.CHAT_MODEL);
   const contents = formatGeminiContents(messages);
 
   const requestBody: Record<string, unknown> = {
@@ -159,22 +195,40 @@ async function callGeminiNonStreaming(
     requestBody.systemInstruction = { parts: [{ text: systemPrompt }] };
   }
 
-  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${env.GEMINI_API_KEY}`;
+  let lastError: Error | null = null;
 
-  const res = await fetch(apiUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(requestBody),
-    signal: AbortSignal.timeout(15000),
-  });
+  for (const model of candidateModels) {
+    try {
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${env.GEMINI_API_KEY}`;
 
-  if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`Gemini non-streaming error (${res.status}): ${errText}`);
+      const res = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody),
+        signal: AbortSignal.timeout(35000),
+      });
+
+      if (!res.ok) {
+        const errText = await res.text();
+        console.warn(`[Gemini Non-Stream] Model ${model} returned HTTP ${res.status}: ${errText.slice(0, 150)}`);
+        if (res.status === 429 || res.status === 503 || res.status === 404) {
+          lastError = new Error(`Gemini ${model} error (${res.status}): ${errText}`);
+          continue;
+        }
+        throw new Error(`Gemini non-streaming error (${res.status}): ${errText}`);
+      }
+
+      const data = await res.json();
+      const text = data?.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text || '').join('') || '';
+      return { text, modelUsed: model };
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      console.warn(`[Gemini Non-Stream] Error attempting model ${model}: ${errorMsg}`);
+      lastError = err instanceof Error ? err : new Error(errorMsg);
+    }
   }
 
-  const data = await res.json();
-  return data?.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text || '').join('') || '';
+  throw lastError || new Error('All Gemini non-streaming candidates failed');
 }
 
 export async function POST(req: NextRequest) {
@@ -297,29 +351,31 @@ Do NOT answer from general knowledge. Do NOT guess. Stay grounded.`;
       let usedFallback = false;
 
       try {
-        resultStream = await callGeminiDirect(systemPrompt, conversationMessages, env);
+        const directResult = await callGeminiDirect(systemPrompt, conversationMessages, env);
+        resultStream = directResult.stream;
       } catch (streamError) {
         console.error('Gemini streaming failed, trying non-streaming fallback:', streamError);
         try {
-          const nonStreamText = await callGeminiNonStreaming(systemPrompt, conversationMessages, env);
+          const nonStreamResult = await callGeminiNonStreaming(systemPrompt, conversationMessages, env);
           usedFallback = true;
           resultStream = new ReadableStream<string>({
             start(controller) {
-              controller.enqueue(nonStreamText);
+              controller.enqueue(nonStreamResult.text);
               controller.close();
             }
           });
         } catch (fallbackError) {
           console.error('Gemini non-streaming also failed:', fallbackError);
           // Last resort: return the best document excerpts directly
+          const reason = fallbackError instanceof Error ? fallbackError.message : 'Service timeout or quota limit';
           let fallbackText: string;
           if (relevantVectors.length > 0) {
             const excerpts = relevantVectors.slice(0, 3).map(
               (item, idx) => `**[${item.item.docName}]** — Excerpt ${idx + 1}:\n> ${item.item.text.slice(0, 500)}${item.item.text.length > 500 ? '...' : ''}`
             ).join('\n\n---\n\n');
-            fallbackText = `⚠️ The AI synthesis service encountered an error. Here are the most relevant passages from your documents:\n\n${excerpts}\n\n_Please try again in a moment for a synthesized answer._`;
+            fallbackText = `⚠️ The AI synthesis service encountered an error (${reason.slice(0, 100)}). Here are the most relevant passages from your documents:\n\n${excerpts}\n\n_Please try again in a moment for a synthesized answer._`;
           } else {
-            fallbackText = 'I could not find relevant information in the uploaded documents for this query. Please try rephrasing your question or upload relevant documents.';
+            fallbackText = `I could not find relevant information in the uploaded documents for this query. (AI service error: ${reason.slice(0, 100)})`;
           }
           resultStream = new ReadableStream<string>({
             start(controller) {
