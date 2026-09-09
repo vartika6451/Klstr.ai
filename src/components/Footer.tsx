@@ -54,6 +54,11 @@ export default function Footer() {
                   Contact Us
                 </Link>
               </li>
+              <li>
+                <Link href="/sitemap" className="text-black/80 hover:text-black transition-colors font-medium">
+                  Sitemap
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -82,11 +87,29 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom Copyright */}
-        <div className="pt-8 text-center border-t border-black/10">
-          <p className="text-black/75 text-sm font-normal">
+        {/* Bottom Copyright & Secondary Links */}
+        <div className="pt-8 border-t border-black/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-black/75">
+          <p className="font-normal text-center sm:text-left">
             © 2025 klstr.ai. All Rights Reserved
           </p>
+          <div className="flex items-center gap-4 text-xs sm:text-[13px] font-medium">
+            <Link href="/sitemap" className="text-black/80 hover:text-black transition-colors">
+              HTML Sitemap
+            </Link>
+            <span className="text-black/30 select-none">•</span>
+            <a
+              href="/sitemap.xml"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-black/80 hover:text-black transition-colors"
+            >
+              XML Feed
+            </a>
+            <span className="text-black/30 select-none">•</span>
+            <Link href="/contact-us" className="text-black/80 hover:text-black transition-colors">
+              Security & Privacy
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

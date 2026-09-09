@@ -7,8 +7,8 @@ const envSchema = z.object({
   GEMINI_API_KEY: z.string().min(1).optional(),
   GEMINI_EMBEDDING_MODEL: z.string().min(1).default('gemini-embedding-001'),
   GROQ_API_KEY: z.string().min(1).optional(),
-  CHAT_MODEL: z.string().default('gemini-flash-latest'),
-  MAX_CHAT_TOKENS: z.coerce.number().default(1024),
+  CHAT_MODEL: z.string().default('gemini-3.6-flash'),
+  MAX_CHAT_TOKENS: z.coerce.number().default(8192),
   RETRIEVAL_TOP_K: z.coerce.number().default(6),
   RELEVANCE_THRESHOLD: z.coerce.number().default(0.35),
 });
